@@ -5,20 +5,24 @@ class Decoder(srd.Decoder):
     id = 'herkulex'
     name = 'HerkuleX'
     longname = 'HerkuleX'
-    desc = 'HerkuleX Decoder'
+    desc = 'HerkuleX Servo Protocol Decoder'
     license = 'gplv2+'
-    inputs = ['uart']      # stack on the built-in UART decoder
+    inputs = ['uart']      # stack on top of UART
     outputs = []
+    tags = ['Remote Control', 'Embedded/industrial', 'Debug/trace']
 
-    Index: int = 0
+    MIN_SAMPLERATE = 2000000
 
-    #Herkulex packet data
-    Header: int = 0xFF
-    Len: int = 0
-    Command: int = 0
-    Servo: int = 0
-    Checksum1: int = 0
-    Checksum2: int = 0
+    DataIndex = 0
+    FrameIndex = 0
+
+    # Herkulex packet data
+    Header = 0xFF
+    Len = 3
+    Command = 0
+    Servo = 0
+    Checksum1 = 0
+    Checksum2 = 0
     PacketData = []
 
     commands = {
@@ -33,42 +37,163 @@ class Decoder(srd.Decoder):
         0x09: 'REBOOT'
     }
 
-
-    # Define annotation types (id, description)
+    # Annotation definitions
     annotations = (
-        ('data', 'Data'),            # index 0
-
+        ('herkulex', 'HerkuleX data'),  # index 0
+        ('invalid', 'Invalid/Error packet'),  # index 1
     )
 
-    # Combine annotation types into visible rows in the UI.
-    # Tuple form: (row_id, row_label, (annotation_indexes,...))
     annotation_rows = (
-        ('data', 'Data', (0,)),      # row showing data annotations (ann index 0)
-
+        ('data_row', 'HerkuleX', (0,)),  # row for normal packets
+        ('error_row', 'Errors', (1,)),  # row for invalid/error packets
     )
 
     def __init__(self):
-        # any state init goes here
         self.reset()
 
     def reset(self):
-        pass
+        self.PacketData = []
+        self.DataIndex = 0
+        self.FrameIndex = 0
+        self.Len = 3
 
     def start(self):
-        # register annotation output so we can post GUI annotations
         self.out_ann = self.register(srd.OUTPUT_ANN)
 
-    def decode_byte(int)->bool:
+    def metadata(self, key, value):
+        if key == srd.SRD_CONF_SAMPLERATE:
+            if value < self.MIN_SAMPLERATE:
+                raise srd.SigrokDecoderError(
+                    "Sample rate too low for HerkuleX: %d Hz (minimum %d Hz)"
+                    % (value, self.MIN_SAMPLERATE)
+                )
+            self.samplerate = value
+
+
+    def decode_byte_Collect(self, number, ss, es):
         """
-        Called for each byte in the packet
-        :return: True if this would cause a packet error
+        Placeholder for byte processing logic.
         """
 
+        if self.DataIndex >= self.Len:
+            self.process_frame(ss, es)
 
 
-    def check_header(byte: int) -> bool:
-        """Return True if this byte is a HerkuleX header byte (0xFF)."""
-        return byte == 0xFF
+
+        if ( self.DataIndex < 2): # 0-1 is header zone
+
+            if number != self.Header:
+                return False
+
+        if (self.DataIndex == 2): # 2 is packet length
+            self.Len=number
+
+        if (self.DataIndex == 3):
+            self.Servo=number
+
+        if (self.DataIndex == 4):
+            self.Command=number
+
+
+        if (self.DataIndex == 5):
+            self.Checksum1=number
+
+
+        if (self.DataIndex == 6):
+            self.Checksum2=number
+
+
+        if (self.DataIndex > 6):
+            #self.log(1, "DEBUG:append time: %d val:%d",self.DataIndex,number)
+            self.PacketData.append(number)
+
+
+
+
+        self.DataIndex = self.DataIndex + 1
+        return True
+
+
+
+
+
+
+    def decode_byte_Check(self, ss, es):
+        """
+        Placeholder for byte processing logic.
+        """
+
+        if self.FrameIndex >= self.Len:
+            self.reset()
+
+        long_text = ""
+        mid_text = ""
+        short_text = ""
+
+        if ( self.FrameIndex < 2): # 0-1 is header zone
+            long_text = "Header"
+            mid_text = "Head"
+            short_text = "H"
+
+        if (self.FrameIndex == 2): # 2 is packet length
+            number = self.Len
+            long_text = "Length %d" % number
+            mid_text = "Len %d" % number
+            short_text = "%d" % number
+
+        if (self.FrameIndex == 3):
+            number = self.Servo
+            if (self.Servo == 254):
+                long_text = "All Servos"
+                mid_text = "All"
+                short_text = "All"
+            else:
+                long_text = "Servo ID %d" % number
+                mid_text = "ID %d" % number
+                short_text = "%d" % number
+
+        if (self.FrameIndex == 4):
+            number = self.Command
+            command_name = self.commands.get(number, "UNKNOWN")
+            if (command_name == "UNKNOWN"):
+                return False
+
+
+            long_text = command_name
+            mid_text = "%d" % number
+            short_text = "%d" % number
+
+        if (self.FrameIndex == 5):
+            number=self.Checksum1
+            long_text = "Checksum1 %d" % len(self.PacketData)
+            mid_text = "CS1"
+            short_text = "CS"
+
+        if (self.FrameIndex == 6):
+            number=self.Checksum2
+            long_text = "Checksum2 %d" % len(self.PacketData)
+            mid_text = "CS2"
+            short_text = "CS"
+
+
+        if (self.FrameIndex > 6):
+            number = self.PacketData[self.FrameIndex-7]
+            long_text = "Packet data %d  size:%d" % (number, len(self.PacketData))
+
+            mid_text = "Pd %d" % number
+            short_text = "%d" % number
+
+
+
+
+        self.FrameIndex = self.FrameIndex + 1
+        return [long_text,mid_text,short_text]
+
+
+
+
+
+
 
 
     def decode(self, ss, es, data):
@@ -83,24 +208,25 @@ class Decoder(srd.Decoder):
 
         ptype = data[0]
 
+        # STARTBIT
+        # if ptype == 'STARTBIT':
+        #     self.Index = 0
+        #     self.PacketData = []
+        #     return
+
         # DATA: ['DATA', rxtx, (value, databits_list)]
-
-        if ptype == 'STARTBIT':
-            self.Index=0
-            self.PacketData=[]
-
-
-
         if ptype == 'DATA':
             try:
                 payload = data[2]
                 val = payload[0] if isinstance(payload, (list, tuple)) else int(payload)
             except Exception:
+                # Post to error row
+                self.put(ss, es, self.out_ann, [1, ["Invalid DATA payload", "Bad payload"]])
                 return
-            long_text = f"Data: 0x{val:02X}"
-            mid_text = f"D:0x{val:02X}"
-            short_text = f"{val:02X}"
-            self.put(ss, es, self.out_ann, [0, [long_text, mid_text,short_text]])
+
+            self.decode_byte_Collect(val, ss, es)
+
+
             return
 
         # FRAME: ['FRAME', rxtx, (value, valid)]
@@ -109,19 +235,39 @@ class Decoder(srd.Decoder):
                 val, valid = data[2]
             except Exception:
                 return
-            if valid:
-                self.put(ss, es, self.out_ann, [0, [f"Frame: 0x{val:02X}", f"{val:02X}"]])
-            else:
-                self.put(ss, es, self.out_ann, [0, [f"Frame error: 0x{val:02X}", "Frame err"]])
+
+            printing = ["Error", "E", "E"]
+            # if (self.DataIndex < 7):
+            printing = self.decode_byte_Check(ss,es)
+            # else:
+            #     long_text = "Data: 0x%02X" % val
+            #     mid_text = "D: 0x%02X" % val
+            #     short_text = "0x%02X" % val
+            #     printing = [long_text, mid_text, short_text]
+
+            self.put(ss, es, self.out_ann, [0, printing])
+            # self.put(ss, es, self.out_ann, [1, "%d" % (self.Index-1)])
+
+
+            # if valid:
+            #     long_text = "Frame: 0x%02X" % val
+            #     short_text = "%02X" % val
+            #     self.put(ss, es, self.out_ann, [0, [long_text, short_text]])
+            # else:
+            #     long_text = "Frame error: 0x%02X" % val
+            #     short_text = "Frame err"
+            #     self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
             return
 
-        # PARITY ERROR: ['PARITY ERROR', rxtx, (expected, actual)]
+        # PARITY ERROR
         if ptype == 'PARITY ERROR':
             try:
                 expected, actual = data[2]
             except Exception:
                 return
-            self.put(ss, es, self.out_ann, [0, [f"Parity error exp={expected} act={actual}", "Parity err"]])
+            long_text = "Parity error exp=%d act=%d" % (expected, actual)
+            short_text = "Parity err"
+            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
             return
 
         # INVALID STARTBIT / STOPBIT
@@ -130,7 +276,9 @@ class Decoder(srd.Decoder):
                 val = data[2]
             except Exception:
                 val = None
-            self.put(ss, es, self.out_ann, [0, [f"Invalid start bit: {val}", "Start err"]])
+            long_text = "Invalid start bit: %s" % str(val)
+            short_text = "Start err"
+            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
             return
 
         if ptype == 'INVALID STOPBIT':
@@ -138,7 +286,9 @@ class Decoder(srd.Decoder):
                 val = data[2]
             except Exception:
                 val = None
-            self.put(ss, es, self.out_ann, [0, [f"Invalid stop bit: {val}", "Stop err"]])
+            long_text = "Invalid stop bit: %s" % str(val)
+            short_text = "Stop err"
+            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
             return
 
         # BREAK
@@ -148,8 +298,8 @@ class Decoder(srd.Decoder):
 
         # IDLE
         if ptype == 'IDLE':
-            self.put(ss, es, self.out_ann, [0, ["Idle", "Idle"]])
+            #self.put(ss, es, self.out_ann, [0, ["Idle", "Idle"]])
             return
 
         # fallback (debug)
-        # self.put(ss, es, self.out_ann, [0, [f"Pkt:{ptype}", str(data)]])
+        # self.put(ss, es, self.out_ann, [1, ["Unknown pkt:%s" % ptype, str(data)]])
