@@ -1,5 +1,26 @@
 import sigrokdecode as srd
 
+#from typing import List, Optional
+
+
+class Sample():
+    def __init__(self,data, start, end):
+        self.data = data
+        self.start = start
+        self.end = end
+
+class Memory():
+    def __init__(self,Type,Bytes,ROM,RAM,Default,Max,Min,Perm):
+        self.Type = Type
+        self.Bytes = Bytes
+        self.ROM = ROM
+        self.RAM = RAM
+        self.Default = Default
+        self.Max = Max
+        self.Min = Min
+        self.Perm = Perm
+
+
 class Decoder(srd.Decoder):
     api_version = 3
     id = 'herkulex'
@@ -18,12 +39,11 @@ class Decoder(srd.Decoder):
 
     # Herkulex packet data
     Header = 0xFF
-    Len = 3
-    Command = 0
-    Servo = 0
-    Checksum1 = 0
-    Checksum2 = 0
-    PacketData = []
+
+    #Record----
+    RecordData = []
+    RecordLength = 0
+    RecordIndex = 0
 
     commands = {
         0x01: 'EEP_WRITE',
@@ -35,6 +55,57 @@ class Decoder(srd.Decoder):
         0x07: 'STAT',
         0x08: 'ROLLBACK',
         0x09: 'REBOOT'
+    }
+
+    RamData = {
+        0: 'ID',
+        1: 'ACK Policy',
+        2: 'Alarm LED Policy',
+        3: 'Torque Policy',
+        4: 'Reserved',
+        5: 'Max Temperature',
+        6: 'Min Voltage',
+        7: 'Max Voltage',
+        8: 'Acceleration Ratio',
+        9: 'Max Acceleration Time',
+        10: 'Dead Zone',
+        11: 'Saturator Offset',
+        12: 'Saturator Slope',
+        14: 'PWM Offset',
+        15: 'Min PWM',
+        16: 'Max PWM',
+        18: 'Overload PWM Threshold',
+        20: 'Min Position',
+        22: 'Max Position',
+        24: 'Position Kp',
+        26: 'Position Kd',
+        28: 'Position Ki',
+        30: 'Position Feedforward Gain 1',
+        32: 'Position Feedforward Gain 2',
+        38: 'LED Blink Period',
+        39: 'ADC Fault Check Period',
+        40: 'Packet Garbage Check Period',
+        41: 'Stop Detection Period',
+        42: 'Overload Detection Period',
+        43: 'Stop Threshold',
+        44: 'Inposition Margin',
+        46: 'Calibration Difference Byte 1',
+        47: 'Calibration Difference Byte 2',
+        48: 'Status Error',
+        49: 'Status Detail',
+        52: 'Torque Control',
+        53: 'LED Control',
+        54: 'Voltage',
+        55: 'Temperature',
+        56: 'Current Control Mode',
+        57: 'Tick',
+        58: 'Calibrated Position',
+        60: 'Absolute Position',
+        62: 'Differential Position',
+        64: 'PWM',
+        68: 'Absolute Goal Position',
+        72: 'Desired Velocity',
+
     }
 
     # Annotation definitions
@@ -52,142 +123,267 @@ class Decoder(srd.Decoder):
         self.reset()
 
     def reset(self):
-        self.PacketData = []
-        self.DataIndex = 0
-        self.FrameIndex = 0
-        self.Len = 3
+
+        self.RecordData = []
+        self.RecordLength = 0
+        self.RecordIndex = 0
 
     def start(self):
         self.out_ann = self.register(srd.OUTPUT_ANN)
 
-    def metadata(self, key, value):
-        if key == srd.SRD_CONF_SAMPLERATE:
-            if value < self.MIN_SAMPLERATE:
-                raise srd.SigrokDecoderError(
-                    "Sample rate too low for HerkuleX: %d Hz (minimum %d Hz)"
-                    % (value, self.MIN_SAMPLERATE)
-                )
-            self.samplerate = value
-
-
-    def decode_byte_Collect(self, number, ss, es):
-        """
-        Placeholder for byte processing logic.
-        """
-
-        if self.DataIndex >= self.Len:
-            self.process_frame(ss, es)
-
-
-
-        if ( self.DataIndex < 2): # 0-1 is header zone
-
-            if number != self.Header:
-                return False
-
-        if (self.DataIndex == 2): # 2 is packet length
-            self.Len=number
-
-        if (self.DataIndex == 3):
-            self.Servo=number
-
-        if (self.DataIndex == 4):
-            self.Command=number
-
-
-        if (self.DataIndex == 5):
-            self.Checksum1=number
-
-
-        if (self.DataIndex == 6):
-            self.Checksum2=number
-
-
-        if (self.DataIndex > 6):
-            #self.log(1, "DEBUG:append time: %d val:%d",self.DataIndex,number)
-            self.PacketData.append(number)
-
-
-
-
-        self.DataIndex = self.DataIndex + 1
-        return True
-
-
-
-
-
-
-    def decode_byte_Check(self, ss, es):
-        """
-        Placeholder for byte processing logic.
-        """
-
-        if self.FrameIndex >= self.Len:
-            self.reset()
-
-        long_text = ""
-        mid_text = ""
-        short_text = ""
-
-        if ( self.FrameIndex < 2): # 0-1 is header zone
-            long_text = "Header"
-            mid_text = "Head"
-            short_text = "H"
-
-        if (self.FrameIndex == 2): # 2 is packet length
-            number = self.Len
-            long_text = "Length %d" % number
-            mid_text = "Len %d" % number
-            short_text = "%d" % number
-
-        if (self.FrameIndex == 3):
-            number = self.Servo
-            if (self.Servo == 254):
-                long_text = "All Servos"
-                mid_text = "All"
-                short_text = "All"
+    def Record(self, number, ss, es):
+        # --- Header area (expect two 0xFF bytes) ---
+        if self.RecordIndex < 2:
+            if number == self.Header:
+                self.RecordData.append(Sample(number, ss, es))
+                self.RecordIndex += 1
             else:
-                long_text = "Servo ID %d" % number
-                mid_text = "ID %d" % number
+                # reset and *re-check* current byte as potential first header byte
+                self.reset()
+                if number == self.Header:
+                    self.RecordData.append(Sample(number, ss, es))
+                    self.RecordIndex = 1
+            return
+
+        # --- Length byte (index == 2) ---
+        if self.RecordIndex == 2:
+            self.RecordData.append(Sample(number, ss, es))
+            self.RecordIndex += 1
+
+            # Basic validation: length must be at least header+length fields (e.g. 3 or more)
+            # and must not be ridiculously large (adjust max_len to your protocol)
+            max_len = 256
+            if number < 3 or number > max_len:
+                # invalid length -> drop and resync
+                self.reset()
+                return
+
+            self.RecordLength = number  # total length (including header)
+            # If length equals number of bytes we already have, decode immediately
+            if len(self.RecordData) == self.RecordLength:
+                self.decode_packet()
+            return
+
+        # --- Data bytes (including checksums and payload) ---
+        # Append the byte
+        self.RecordData.append(Sample(number, ss, es))
+        self.RecordIndex += 1
+
+        # If we've reached the expected total length, decode now (do it in the same call)
+        if len(self.RecordData) == self.RecordLength:
+            self.decode_packet()
+        return
+
+    def decode_packet(self):
+
+        for i in range(1,self.RecordLength):
+            if i==1: #header
+                start = self.RecordData[0].start
+                end =  self.RecordData[i].end
+
+                long_text = "Header %d" % len(self.RecordData)
+                mid_text = "Head"
+                short_text = "H"
+                self.put(start, end, self.out_ann, [0, [long_text,mid_text,short_text]])
+
+            if i==2:
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                long_text = "Length %d" % number
+                mid_text = "Len %d" % number
+                short_text = "%d" % number
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            if i==3:
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                if (number == 254):
+                    long_text = "All Servos"
+                    mid_text = "All"
+                    short_text = "All"
+                else:
+                    long_text = "Servo ID %d" % number
+                    mid_text = "ID %d" % number
+                    short_text = "%d" % number
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            if i==4:
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                command_name = self.commands.get(number, "UNKNOWN")
+                long_text = command_name
+                mid_text = "%d" % number
+                short_text = "%d" % number
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+
+                if command_name == "UNKNOWN":
+                    long_text = command_name
+                    mid_text = command_name
+                    short_text = command_name
+                else:
+                    long_text = "Valid"
+                    mid_text = "Valid"
+                    short_text = "Valid"
+
+                self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+
+            if i==5:
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                long_text = "Checksum1 %d" % number
+                mid_text = "CS1 %d" % number
                 short_text = "%d" % number
 
-        if (self.FrameIndex == 4):
-            number = self.Command
-            command_name = self.commands.get(number, "UNKNOWN")
-            if (command_name == "UNKNOWN"):
-                return False
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+                if (self.validCheckSum1() == number):
+                    long_text = "Valid"
+                    mid_text = "Valid"
+                    short_text = "Valid"
+                else:
+                    long_text = "Invalid"
+                    mid_text = "Invalid"
+                    short_text = "Invalid"
+
+                self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+            if i == 6:
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                long_text = "Checksum2 %d" % number
+                mid_text = "CS2 %d" % number
+                short_text = "%d" % number
+
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
 
-            long_text = command_name
-            mid_text = "%d" % number
-            short_text = "%d" % number
+                if (self.validCheckSum2() == number):
+                    long_text = "Valid"
+                    mid_text = "Valid"
+                    short_text = "Valid"
+                else:
+                    long_text = "Invalid"
+                    mid_text = "Invalid"
+                    short_text = "Invalid"
 
-        if (self.FrameIndex == 5):
-            number=self.Checksum1
-            long_text = "Checksum1 %d" % len(self.PacketData)
-            mid_text = "CS1"
-            short_text = "CS"
+                self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
 
-        if (self.FrameIndex == 6):
-            number=self.Checksum2
-            long_text = "Checksum2 %d" % len(self.PacketData)
-            mid_text = "CS2"
-            short_text = "CS"
-
-
-        if (self.FrameIndex > 6):
-            number = self.PacketData[self.FrameIndex-7]
-            long_text = "Packet data %d  size:%d" % (number, len(self.PacketData))
-
-            mid_text = "Pd %d" % number
-            short_text = "%d" % number
+            if i > 6:
 
 
 
+                # if command_name == "EEP_WRITE":
+                #     self.ROM_Write()
+                #     break
+                # elif command_name == "EEP_READ":
+                #     self.ROM_Read()
+                #     break
+                # elif command_name == "RAM_WRITE":
+                #     self.RAM_Write()
+                #     break
+                # elif command_name == "RAM_READ":
+                #     self.RAM_Read()
+                #     break
+                # elif command_name == "I_JOG":
+                #     self.I_JOG()
+                #     break
+                # elif command_name == "S_JOG":
+                #     self.S_JOG()
+                #     break
+                # elif command_name == "STAT":
+                #     self.STAT()
+                #     break
+                # elif command_name == "ROLLBACK":
+                #     self.ROLLBACK()
+                #     break
+                # elif command_name == "REBOOT":
+                #     self.REBOOT()
+                #     break
+                # else:
+                long_text = "Packet data %d  " % number
+                mid_text = "Pd %d" % number
+                short_text = "%d" % number
 
-        self.FrameIndex = self.FrameIndex + 1
-        return [long_text,mid_text,short_text]
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+        self.reset()
+
+
+    def validCheckSum1(self):
+        return self.validCheckSumSub()&0xFE
+
+    def validCheckSum2(self):
+        return (~(self.validCheckSumSub())) & 0xFE
+
+
+    def validCheckSumSub(self):
+        PacketSize = self.RecordData[2].data
+        PID = self.RecordData[3].data
+        CMD = self.RecordData[4].data
+
+        Sum = PacketSize^PID^CMD
+
+        for i in range(7,self.RecordLength):
+         Sum = Sum ^ self.RecordData[i].data
+
+        return Sum
+
+
+
+    def ROM_Write(self):
+        start = self.RecordData[7].start
+        end = self.RecordData[7].end
+        number = self.RecordData[7].data
+
+        RamName = self.RamData.get(number, "UNKNOWN")
+
+        long_text = RamName
+        mid_text = RamName
+        short_text = RamName
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+        return
+
+    def ROM_Read(self):
+        return
+
+    def RAM_Write(self):
+
+        return
+
+    def RAM_Read(self):
+        return
+
+    def I_JOG(self):
+        return
+
+    def S_JOG(self):
+        return
+
+    def STAT(self):
+        return
+
+    def ROLLBACK(self):
+        return
+
+    def REBOOT(self):
+        return
+
+
 
 
 
@@ -224,7 +420,7 @@ class Decoder(srd.Decoder):
                 self.put(ss, es, self.out_ann, [1, ["Invalid DATA payload", "Bad payload"]])
                 return
 
-            self.decode_byte_Collect(val, ss, es)
+            #self.decode_byte_Collect(val, ss, es)
 
 
             return
@@ -236,16 +432,17 @@ class Decoder(srd.Decoder):
             except Exception:
                 return
 
-            printing = ["Error", "E", "E"]
+            #printing = ["Error", "E", "E"]
             # if (self.DataIndex < 7):
-            printing = self.decode_byte_Check(ss,es)
+            #printing = self.decode_byte_Check(ss,es)
+            self.Record(val, ss, es)
             # else:
             #     long_text = "Data: 0x%02X" % val
             #     mid_text = "D: 0x%02X" % val
             #     short_text = "0x%02X" % val
             #     printing = [long_text, mid_text, short_text]
 
-            self.put(ss, es, self.out_ann, [0, printing])
+            #self.put(ss, es, self.out_ann, [0, printing])
             # self.put(ss, es, self.out_ann, [1, "%d" % (self.Index-1)])
 
 
@@ -303,3 +500,7 @@ class Decoder(srd.Decoder):
 
         # fallback (debug)
         # self.put(ss, es, self.out_ann, [1, ["Unknown pkt:%s" % ptype, str(data)]])
+
+
+
+
