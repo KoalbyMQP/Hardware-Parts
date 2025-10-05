@@ -1,4 +1,5 @@
 import sigrokdecode as srd
+from . import Memory
 
 #from typing import List, Optional
 
@@ -9,16 +10,7 @@ class Sample():
         self.start = start
         self.end = end
 
-class Memory():
-    def __init__(self,Type,Bytes,ROM,RAM,Default,Max,Min,Perm):
-        self.Type = Type
-        self.Bytes = Bytes
-        self.ROM = ROM
-        self.RAM = RAM
-        self.Default = Default
-        self.Max = Max
-        self.Min = Min
-        self.Perm = Perm
+
 
 
 class Decoder(srd.Decoder):
@@ -57,56 +49,15 @@ class Decoder(srd.Decoder):
         0x09: 'REBOOT'
     }
 
-    RamData = {
-        0: 'ID',
-        1: 'ACK Policy',
-        2: 'Alarm LED Policy',
-        3: 'Torque Policy',
-        4: 'Reserved',
-        5: 'Max Temperature',
-        6: 'Min Voltage',
-        7: 'Max Voltage',
-        8: 'Acceleration Ratio',
-        9: 'Max Acceleration Time',
-        10: 'Dead Zone',
-        11: 'Saturator Offset',
-        12: 'Saturator Slope',
-        14: 'PWM Offset',
-        15: 'Min PWM',
-        16: 'Max PWM',
-        18: 'Overload PWM Threshold',
-        20: 'Min Position',
-        22: 'Max Position',
-        24: 'Position Kp',
-        26: 'Position Kd',
-        28: 'Position Ki',
-        30: 'Position Feedforward Gain 1',
-        32: 'Position Feedforward Gain 2',
-        38: 'LED Blink Period',
-        39: 'ADC Fault Check Period',
-        40: 'Packet Garbage Check Period',
-        41: 'Stop Detection Period',
-        42: 'Overload Detection Period',
-        43: 'Stop Threshold',
-        44: 'Inposition Margin',
-        46: 'Calibration Difference Byte 1',
-        47: 'Calibration Difference Byte 2',
-        48: 'Status Error',
-        49: 'Status Detail',
-        52: 'Torque Control',
-        53: 'LED Control',
-        54: 'Voltage',
-        55: 'Temperature',
-        56: 'Current Control Mode',
-        57: 'Tick',
-        58: 'Calibrated Position',
-        60: 'Absolute Position',
-        62: 'Differential Position',
-        64: 'PWM',
-        68: 'Absolute Goal Position',
-        72: 'Desired Velocity',
+    
 
-    }
+    MotorMemory = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+
+
 
     # Annotation definitions
     annotations = (
@@ -115,8 +66,8 @@ class Decoder(srd.Decoder):
     )
 
     annotation_rows = (
-        ('data_row', 'HerkuleX', (0,)),  # row for normal packets
-        ('error_row', 'Errors', (1,)),  # row for invalid/error packets
+        ('data_row', 'Data', (0,)),  # row for normal packets
+        ('error_row', 'Validate', (1,)),  # row for invalid/error packets
     )
 
     def __init__(self):
@@ -130,6 +81,63 @@ class Decoder(srd.Decoder):
 
     def start(self):
         self.out_ann = self.register(srd.OUTPUT_ANN)
+        self.MotorMemory = [
+            Memory.Memory("Model No1", 1, 0, None, None, None, "RO", None),
+            Memory.Memory("Model No2", 1, 1, None, None, None, "RO", None),
+            Memory.Memory("Firmware Version 1/2", 1, 2, None, None, None, "RO", None),
+            Memory.Memory("Firmware Version 2/2", 1, 3, None, None, None, "RO", None),
+            Memory.Memory("Baud Rate", 1, 4, None, None, None, "RW", None),
+            Memory.Memory("ID", 1, 6, 0, 0x00, 0xFD, "RW", None),
+            Memory.Memory("ACK Policy", 1, 7, 1, 0x00, 0x20, "RW", None),
+            Memory.Memory("Alarm LED Policy", 1, 8, 2, 0x00, 0x7F, "RW", None),
+            Memory.Memory("Torque Policy", 1, 9, 3, 0x00, 0x7F, "RW", None),
+            Memory.Memory("Max Temperature", 1, 11, 5, 0, 110, "RW", None),
+            Memory.Memory("Min Voltage", 1, 12, 6, 92, 200, "RW", None),
+            Memory.Memory("Max Voltage", 1, 13, 7, 92, 200, "RW", None),
+            Memory.Memory("Acceleration Ratio", 1, 14, 8, 0x00, 50, "RW", None),
+            Memory.Memory("Max Acceleration Time", 1, 15, 9, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Dead Zone", 1, 16, 10, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Saturator Offset", 1, 17, 11, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Saturator Slope", 2, 18, 12, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("PWM Offset", 1, 20, 14, -128, 127, "RW", None),
+            Memory.Memory("Min PWM", 1, 21, 15, 0, 254, "RW", None),
+            Memory.Memory("Max PWM", 2, 22, 16, 0x0000, 0x03FF, "RW", None),
+            Memory.Memory("Overload PWM Threshold", 2, 18, 18, 0x0000, 0x03FF, "RW", None),
+            Memory.Memory("Min Position", 2, 26, 20, 0, 2047, "RW", None),
+            Memory.Memory("Max Position", 2, 28, 22, 0, 2047, "RW", None),
+            Memory.Memory("Position Kp", 2, 30, 24, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("Position Kd", 2, 32, 26, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("Position Ki", 2, 34, 28, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("Position Feedforward Gain 1", 2, 36, 30, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("Position Feedforward Gain 2", 2, 38, 32, 0x0000, 0x7FFF, "RW", None),
+            Memory.Memory("LED Blink Period", 1, 44, 38, 0x00, 0xFE, "RW", None),
+            Memory.Memory("ADC Fault Check Period", 1, 45, 39, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Packet Garbage Check Period", 1, 46, 40, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Stop Detection Period", 1, 47, 41, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Overload Detection Period", 1, 48, 42, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Stop Threshold", 1, 49, 43, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Inposition Margin", 1, 50, 44, 0x00, 0xFE, "RW", None),
+            Memory.Memory("Calibration Difference Byte 1", 1, 52, 46, None, None, "RW", None),
+            Memory.Memory("Calibration Difference Byte 2", 1, 53, 47, None, None, "RW", None),
+            Memory.Memory("Status Error", 1, None, 48, 0x00, 0x7F, "RW", None),
+            Memory.Memory("Status Detail", 1, None, 49, 0x00, 0x7F, "RW", None),
+            Memory.Memory("Torque Control", 1, None, 52, None, None, "RW", self.TorqueControl),
+            Memory.Memory("LED Control", 1, None, 53, 0x00, 0x07, "RW", None),
+            Memory.Memory("Voltage", 1, None, 54, 0, 200, "RO", None),
+            Memory.Memory("Temperature", 1, None, 55, 0, 110, "RO", None),
+            Memory.Memory("Current Control Mode", 1, None, 56, 0, 1, "RO", None),
+            Memory.Memory("Tick", 1, None, 57, 0x00, 0xFF, "RO", None),
+            Memory.Memory("Calibrated Position", 2, None, 58, None, None, "RO", None),
+            Memory.Memory("Absolute Position", 2, None, 60, None, None, "RO", None),
+            Memory.Memory("Differential Position", 2, None, 62, None, None, "RO", None),
+            Memory.Memory("PWM", 2, None, 64, None, None, "RO", None),
+            Memory.Memory("Absolute Goal Position", 2, None, 68, None, None, "RO", None),
+            Memory.Memory("Absolute Desired Trajectory Position", 2, None, 70, None, None, "RO", None),
+            Memory.Memory("Desired Velocity", 2, None, 72, None, None, "RO", None),
+        ]
+
+
+
 
     def Record(self, number, ss, es):
         # --- Header area (expect two 0xFF bytes) ---
@@ -175,8 +183,8 @@ class Decoder(srd.Decoder):
         return
 
     def decode_packet(self):
-
-        for i in range(1,self.RecordLength):
+        command_name=""
+        for i in range(1,7):
             if i==1: #header
                 start = self.RecordData[0].start
                 end =  self.RecordData[i].end
@@ -229,7 +237,7 @@ class Decoder(srd.Decoder):
                     mid_text = command_name
                     short_text = command_name
                 else:
-                    long_text = "Valid"
+                    long_text = "Valid Command"
                     mid_text = "Valid"
                     short_text = "Valid"
 
@@ -248,12 +256,12 @@ class Decoder(srd.Decoder):
                 self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
                 if (self.validCheckSum1() == number):
-                    long_text = "Valid"
-                    mid_text = "Valid"
+                    long_text = "Valid Checksum"
+                    mid_text = "Valid Check"
                     short_text = "Valid"
                 else:
-                    long_text = "Invalid"
-                    mid_text = "Invalid"
+                    long_text = "Invalid Checksum"
+                    mid_text = "Invalid Check"
                     short_text = "Invalid"
 
                 self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
@@ -271,53 +279,60 @@ class Decoder(srd.Decoder):
 
 
                 if (self.validCheckSum2() == number):
-                    long_text = "Valid"
-                    mid_text = "Valid"
+                    long_text = "Valid Checksum"
+                    mid_text = "Valid Check"
                     short_text = "Valid"
                 else:
-                    long_text = "Invalid"
-                    mid_text = "Invalid"
+                    long_text = "Invalid Checksum"
+                    mid_text = "Invalid Check"
                     short_text = "Invalid"
 
                 self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
 
-            if i > 6:
 
 
+        if command_name=="UNKNOWN":
+            for i in range(7,self.RecordLength):
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
 
-                # if command_name == "EEP_WRITE":
-                #     self.ROM_Write()
-                #     break
-                # elif command_name == "EEP_READ":
-                #     self.ROM_Read()
-                #     break
-                # elif command_name == "RAM_WRITE":
-                #     self.RAM_Write()
-                #     break
-                # elif command_name == "RAM_READ":
-                #     self.RAM_Read()
-                #     break
-                # elif command_name == "I_JOG":
-                #     self.I_JOG()
-                #     break
-                # elif command_name == "S_JOG":
-                #     self.S_JOG()
-                #     break
-                # elif command_name == "STAT":
-                #     self.STAT()
-                #     break
-                # elif command_name == "ROLLBACK":
-                #     self.ROLLBACK()
-                #     break
-                # elif command_name == "REBOOT":
-                #     self.REBOOT()
-                #     break
-                # else:
                 long_text = "Packet data %d  " % number
                 mid_text = "Pd %d" % number
                 short_text = "%d" % number
 
                 self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        elif command_name=="RAM_WRITE":
+            self.RAM_Write()
+
+        elif command_name=="RAM_READ":
+            self.RAM_Read()
+
+        elif command_name=="EEP_WRITE":
+            self.ROM_Write()
+
+        elif command_name=="EEP_READ":
+            self.ROM_Read()
+
+        elif command_name=="I_JOG":
+            self.I_JOG()
+
+        elif command_name == "S_JOG":
+            self.S_JOG()
+
+        elif command_name=="STAT":
+            self.STAT()
+
+        elif command_name=="ROLLBACK":
+            self.ROLLBACK()
+
+        elif command_name=="REBOOT":
+            self.REBOOT()
+
+
+
+
 
 
         self.reset()
@@ -345,23 +360,79 @@ class Decoder(srd.Decoder):
 
 
     def ROM_Write(self):
-        start = self.RecordData[7].start
-        end = self.RecordData[7].end
-        number = self.RecordData[7].data
-
-        RamName = self.RamData.get(number, "UNKNOWN")
-
-        long_text = RamName
-        mid_text = RamName
-        short_text = RamName
-
-        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
         return
 
     def ROM_Read(self):
         return
 
     def RAM_Write(self):
+        RamIndex = 7
+        RamObject = self.GetMemFromRAM(self.RecordData[RamIndex].data)
+
+
+
+        #Name tag
+        name = RamObject.Type
+        start = self.RecordData[RamIndex].start
+        end = self.RecordData[RamIndex].end
+
+        long_text = "RAM: " + name
+        mid_text = name
+        short_text = name
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        # Permission tag
+        Permission = RamObject.Perm
+        long_text = "Permission: " + Permission
+        mid_text = "Perm: " + Permission
+        short_text = Permission
+
+        self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+
+        RamIndex = RamIndex + 1
+
+
+
+
+
+        # Sub length
+        start = self.RecordData[RamIndex].start
+        end = self.RecordData[RamIndex].end
+        number = self.RecordData[RamIndex].data
+
+        long_text = "Sub Length: %d" % number
+        mid_text = "SL %d" % number
+        short_text = "%d" % number
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        if (number != RamObject.Bytes):
+            start = self.RecordData[RamIndex].start
+            end = self.RecordData[RamIndex].end
+
+            long_text = "Invalid expected %d" % RamObject.Bytes
+            mid_text = "Invalid != %d" % RamObject.Bytes
+            short_text = "Invalid"
+            self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+        RamIndex = RamIndex + 1
+
+        #Packet Sub data
+        if (RamObject.Fucntion != None):
+            RamObject.Fucntion(RamIndex,self.RecordData)
+
+        else:
+            for i in range(9, self.RecordLength): #Data values
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
+
+                long_text = "Value: %d" % number
+                mid_text = "Val %d" % number
+                short_text = "%d" % number
+
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
         return
 
@@ -372,6 +443,104 @@ class Decoder(srd.Decoder):
         return
 
     def S_JOG(self):
+        Index = 7
+
+        # Playtime
+        start = self.RecordData[Index].start
+        end = self.RecordData[Index].end
+        number = self.RecordData[Index].data
+
+        time = number * 11.2
+
+        long_text = "PTime: %.1fms" % time
+        mid_text = "PT: %.1fms" % time
+        short_text = "%.1f" % time
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        Index = Index + 1
+
+
+        # Position
+        JOG_LSB = self.RecordData[Index].data
+        JOG_MSB = self.RecordData[Index + 1].data
+        Position = (JOG_MSB << 8) | JOG_LSB
+        start = self.RecordData[Index].start
+        end = self.RecordData[Index + 1].end
+        long_text = "Goal %d" % Position
+        mid_text = "%d" % Position
+        short_text = "%d" % Position
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        Index = Index + 2
+
+        # Set
+        start = self.RecordData[Index].start
+        end = self.RecordData[Index].end
+        SET = self.RecordData[Index].data
+
+        #Flips the bit order
+        SET = int('{:08b}'.format(SET)[::-1], 2)
+
+        long_text = ""
+        mid_text = "..."
+        short_text = "..."
+
+        # Set -> Direction
+        if (SET & 0b00000001) == 0:
+            direction = "CCW"
+        else:
+            direction = "CW"
+
+        # Set -> Mode
+        if (SET & 0b10000000) == 0:
+            mode = "Position"
+        else:
+            mode = "Continuous"
+
+        # Set -> LEDs
+        red_led = (SET & 0b00010000) != 0
+        green_led = (SET & 0b00100000) != 0
+        blue_led = (SET & 0b01000000) != 0
+
+        # Combine LED info into a readable color name (optional)
+        if red_led and green_led and blue_led:
+            led_color = "White"
+        elif red_led and green_led:
+            led_color = "Soft Green"
+        elif red_led and blue_led:
+            led_color = "Pink"
+        elif green_led and blue_led:
+            led_color = "Cyan"
+        elif red_led:
+            led_color = "Red"
+        elif green_led:
+            led_color = "Green"
+        elif blue_led:
+            led_color = "Blue"
+        else:
+            led_color = "Off"
+
+        long_text=direction+" : "+mode+" : "+led_color
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        Index = Index + 1
+
+
+        # Servo ID
+        start = self.RecordData[Index].start
+        end = self.RecordData[Index].end
+        ServoId = self.RecordData[Index].data
+        long_text = "Servo ID %d" % ServoId
+        mid_text = "ID %d" % ServoId
+        short_text = "%d" % ServoId
+
+
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+
         return
 
     def STAT(self):
@@ -383,10 +552,55 @@ class Decoder(srd.Decoder):
     def REBOOT(self):
         return
 
+    def TorqueControl(self, Index, RecordData):
+        Target = RecordData[Index]
+        start = Target.start
+        end = Target.end
 
+        long_text = "UNKNOWN"
+        mid_text = "UNKNOWN"
+        short_text = "UNKNOWN"
 
+        if (Target.data == 0x40):
+            long_text = "Break On"
+            mid_text = "Break"
+            short_text = "Break"
 
+        if (Target.data == 0x60):
+            long_text = "Torque On"
+            mid_text = "On"
+            short_text = "On"
 
+        if (Target.data == 0x00):
+            long_text = "Torque Free"
+            mid_text = "Free"
+            short_text = "Free"
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        if (long_text == "UNKNOWN"):
+            long_text = "Invalid"
+            mid_text = "Invalid"
+            short_text = "Invalid"
+            self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+    def GetMemFromRAM(self, Ram_Number):
+        for i in range(len(self.MotorMemory)):
+            if self.MotorMemory[i].RAM == Ram_Number:
+                return self.MotorMemory[i]
+        return None
+
+    def GetMemFromROM(self, Rom_Number):
+        for i in range(len(self.MotorMemory)):
+            if self.MotorMemory[i].ROM == Rom_Number:
+                return self.MotorMemory[i]
+        return None
+
+    def GetMemFromName(self, Name):
+        for i in range(len(self.MotorMemory)):
+            if self.MotorMemory[i].Type == Name:
+                return self.MotorMemory[i]
+        return None
 
 
 
