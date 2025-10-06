@@ -482,9 +482,7 @@ class Decoder(srd.Decoder):
         #Flips the bit order
         SET = int('{:08b}'.format(SET)[::-1], 2)
 
-        long_text = ""
-        mid_text = "..."
-        short_text = "..."
+
 
         # Set -> Direction
         if (SET & 0b00000001) == 0:
@@ -492,11 +490,34 @@ class Decoder(srd.Decoder):
         else:
             direction = "CW"
 
+        long_text = direction
+        mid_text = direction
+        short_text = direction
+
+        SubStart = self.SubTime(start, end, 8 , 10)
+        SubEnd = self.SubTime(start, end, 9, 10)
+        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+
+
         # Set -> Mode
         if (SET & 0b10000000) == 0:
+            long_text = "Position"
+            mid_text = "Posi"
+            short_text = "P"
             mode = "Position"
+            mode
         else:
+            long_text = "Continuous"
+            mid_text = "Cont"
+            short_text = "C"
             mode = "Continuous"
+
+        SubStart = self.SubTime(start, end, 1, 10)
+        SubEnd = self.SubTime(start, end, 2, 10)
+        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
 
         # Set -> LEDs
         red_led = (SET & 0b00010000) != 0
@@ -521,8 +542,19 @@ class Decoder(srd.Decoder):
         else:
             led_color = "Off"
 
-        long_text=direction+" : "+mode+" : "+led_color
-        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+        long_text = led_color
+        mid_text = led_color
+        short_text = led_color
+        SubStart = self.SubTime(start, end, 2, 10)
+        SubEnd = self.SubTime(start, end, 5, 10)
+        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+        long_text = "Reserved"
+        mid_text = "Reserved"
+        short_text = "---"
+        SubStart = self.SubTime(start, end, 5, 10)
+        SubEnd = self.SubTime(start, end, 8, 10)
+        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
 
         Index = Index + 1
 
@@ -604,116 +636,120 @@ class Decoder(srd.Decoder):
 
 
 
+    def SubTime(self, start, end, target, InBetweens):
+        distance = float(end - start)
+        value = (distance / float(InBetweens)) * float(target)
+        return start + int(round(value))
 
 
     def decode(self, ss, es, data):
-        """
-        ss, es: start/end sample numbers provided by stacked UART decoder
-        data: packets forwarded by the UART decoder (e.g. 'DATA', 'FRAME', etc.)
-        """
-        if not data:
-            return
-        if not isinstance(data, (list, tuple)) or len(data) < 1:
-            return
-
-        ptype = data[0]
-
-        # STARTBIT
-        # if ptype == 'STARTBIT':
-        #     self.Index = 0
-        #     self.PacketData = []
-        #     return
-
-        # DATA: ['DATA', rxtx, (value, databits_list)]
-        if ptype == 'DATA':
-            try:
-                payload = data[2]
-                val = payload[0] if isinstance(payload, (list, tuple)) else int(payload)
-            except Exception:
-                # Post to error row
-                self.put(ss, es, self.out_ann, [1, ["Invalid DATA payload", "Bad payload"]])
+            """
+            ss, es: start/end sample numbers provided by stacked UART decoder
+            data: packets forwarded by the UART decoder (e.g. 'DATA', 'FRAME', etc.)
+            """
+            if not data:
+                return
+            if not isinstance(data, (list, tuple)) or len(data) < 1:
                 return
 
-            #self.decode_byte_Collect(val, ss, es)
+            ptype = data[0]
+
+            # STARTBIT
+            # if ptype == 'STARTBIT':
+            #     self.Index = 0
+            #     self.PacketData = []
+            #     return
+
+            # DATA: ['DATA', rxtx, (value, databits_list)]
+            if ptype == 'DATA':
+                try:
+                    payload = data[2]
+                    val = payload[0] if isinstance(payload, (list, tuple)) else int(payload)
+                except Exception:
+                    # Post to error row
+                    self.put(ss, es, self.out_ann, [1, ["Invalid DATA payload", "Bad payload"]])
+                    return
+
+                #self.decode_byte_Collect(val, ss, es)
 
 
-            return
-
-        # FRAME: ['FRAME', rxtx, (value, valid)]
-        if ptype == 'FRAME':
-            try:
-                val, valid = data[2]
-            except Exception:
                 return
 
-            #printing = ["Error", "E", "E"]
-            # if (self.DataIndex < 7):
-            #printing = self.decode_byte_Check(ss,es)
-            self.Record(val, ss, es)
-            # else:
-            #     long_text = "Data: 0x%02X" % val
-            #     mid_text = "D: 0x%02X" % val
-            #     short_text = "0x%02X" % val
-            #     printing = [long_text, mid_text, short_text]
+            # FRAME: ['FRAME', rxtx, (value, valid)]
+            if ptype == 'FRAME':
+                try:
+                    val, valid = data[2]
+                except Exception:
+                    return
 
-            #self.put(ss, es, self.out_ann, [0, printing])
-            # self.put(ss, es, self.out_ann, [1, "%d" % (self.Index-1)])
+                #printing = ["Error", "E", "E"]
+                # if (self.DataIndex < 7):
+                #printing = self.decode_byte_Check(ss,es)
+                self.Record(val, ss, es)
+                # else:
+                #     long_text = "Data: 0x%02X" % val
+                #     mid_text = "D: 0x%02X" % val
+                #     short_text = "0x%02X" % val
+                #     printing = [long_text, mid_text, short_text]
+
+                #self.put(ss, es, self.out_ann, [0, printing])
+                # self.put(ss, es, self.out_ann, [1, "%d" % (self.Index-1)])
 
 
-            # if valid:
-            #     long_text = "Frame: 0x%02X" % val
-            #     short_text = "%02X" % val
-            #     self.put(ss, es, self.out_ann, [0, [long_text, short_text]])
-            # else:
-            #     long_text = "Frame error: 0x%02X" % val
-            #     short_text = "Frame err"
-            #     self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
-            return
-
-        # PARITY ERROR
-        if ptype == 'PARITY ERROR':
-            try:
-                expected, actual = data[2]
-            except Exception:
+                # if valid:
+                #     long_text = "Frame: 0x%02X" % val
+                #     short_text = "%02X" % val
+                #     self.put(ss, es, self.out_ann, [0, [long_text, short_text]])
+                # else:
+                #     long_text = "Frame error: 0x%02X" % val
+                #     short_text = "Frame err"
+                #     self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
                 return
-            long_text = "Parity error exp=%d act=%d" % (expected, actual)
-            short_text = "Parity err"
-            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
-            return
 
-        # INVALID STARTBIT / STOPBIT
-        if ptype == 'INVALID STARTBIT':
-            try:
-                val = data[2]
-            except Exception:
-                val = None
-            long_text = "Invalid start bit: %s" % str(val)
-            short_text = "Start err"
-            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
-            return
+            # PARITY ERROR
+            if ptype == 'PARITY ERROR':
+                try:
+                    expected, actual = data[2]
+                except Exception:
+                    return
+                long_text = "Parity error exp=%d act=%d" % (expected, actual)
+                short_text = "Parity err"
+                self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
+                return
 
-        if ptype == 'INVALID STOPBIT':
-            try:
-                val = data[2]
-            except Exception:
-                val = None
-            long_text = "Invalid stop bit: %s" % str(val)
-            short_text = "Stop err"
-            self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
-            return
+            # INVALID STARTBIT / STOPBIT
+            if ptype == 'INVALID STARTBIT':
+                try:
+                    val = data[2]
+                except Exception:
+                    val = None
+                long_text = "Invalid start bit: %s" % str(val)
+                short_text = "Start err"
+                self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
+                return
 
-        # BREAK
-        if ptype == 'BREAK':
-            self.put(ss, es, self.out_ann, [0, ["Break condition", "Break"]])
-            return
+            if ptype == 'INVALID STOPBIT':
+                try:
+                    val = data[2]
+                except Exception:
+                    val = None
+                long_text = "Invalid stop bit: %s" % str(val)
+                short_text = "Stop err"
+                self.put(ss, es, self.out_ann, [1, [long_text, short_text]])
+                return
 
-        # IDLE
-        if ptype == 'IDLE':
-            #self.put(ss, es, self.out_ann, [0, ["Idle", "Idle"]])
-            return
+            # BREAK
+            if ptype == 'BREAK':
+                self.put(ss, es, self.out_ann, [0, ["Break condition", "Break"]])
+                return
 
-        # fallback (debug)
-        # self.put(ss, es, self.out_ann, [1, ["Unknown pkt:%s" % ptype, str(data)]])
+            # IDLE
+            if ptype == 'IDLE':
+                #self.put(ss, es, self.out_ann, [0, ["Idle", "Idle"]])
+                return
+
+            # fallback (debug)
+            # self.put(ss, es, self.out_ann, [1, ["Unknown pkt:%s" % ptype, str(data)]])
 
 
 
