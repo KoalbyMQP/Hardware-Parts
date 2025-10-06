@@ -306,13 +306,10 @@ void HerkulexClass::initialize()
 		Herkulex.SetIndirect(false);
         conta=0;
 		lenghtString=0;
-        delay(100);       
         clearError(BROADCAST_ID);	// clear error for all servos
-        delay(10);
-        ACK(1);						// set ACK
-        delay(10);
+        ACK(2);						// set ACK
         torqueON(BROADCAST_ID);		// torqueON for all servos
-        delay(10);
+
 		
 }
 
@@ -445,7 +442,7 @@ void HerkulexClass::ACK(int valueACK)
 	pSize = 0x0A;               // 3.Packet size 7-58
 	pID   = 0xFE;	            // 4. Servo ID
 	cmd   = HRAMWRITE;          // 5. CMD
-	data[0]=0x34;               // 8. Address
+	data[0]=0x01;               // 8. Address
 	data[1]=0x01;               // 9. Lenght
 	data[2]=valueACK;           // 10.Value. 0=No Replay, 1=Only reply to READ CMD, 2=Always reply
 	lenghtString=3;             // lenghtData
@@ -533,11 +530,10 @@ void HerkulexClass::clearError(int servoID)
 	pID   = servoID;     		// 4. Servo ID - 253=all servos
 	cmd   = HRAMWRITE;          // 5. CMD
 	data[0]=0x30;               // 8. Address
-	data[1]=0x02;               // 9. Lenght
-	data[2]=0x00;               // 10. Write error=0
-	data[3]=0x00;               // 10. Write detail error=0
+	data[1]=0x01;               // 9. Lenght
+	data[2]=0x00;               // 10. Write error=0// 10. Write detail error=0
 	
-	lenghtString=4;             // lenghtData
+	lenghtString=3;             // lenghtData
 
 	sendRamWrite(data, lenghtString);
 }
@@ -1681,7 +1677,7 @@ void HerkulexClass::sendData(byte* buffer, int length) {
 
 	if (!Indirect){
 		(void) uart_write_bytes(port, buffer, length);
-		vTaskDelay(100 / portTICK_PERIOD_MS);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -1690,7 +1686,7 @@ int HerkulexClass::readData(int size){
 	int i = 0;
 	byte* bpt = &dataEx[9];
 	(void) uart_read_bytes(port, bpt, size, pdMS_TO_TICKS(10));
-	vTaskDelay(100 / portTICK_PERIOD_MS);
+	vTaskDelay(10 / portTICK_PERIOD_MS);
 	return i;
 }
 
