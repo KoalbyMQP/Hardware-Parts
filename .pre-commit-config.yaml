@@ -1,0 +1,27 @@
+repos:
+  # 1. Pre-commit’s own built-in hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0  # Use the latest stable version
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: detect-private-key
+  - repo: https://github.com/KoalbyMQP/rolint-pre-commit
+    rev: 0.1.11
+    hooks:
+      - id: rolint
+        name: "RoLint"
+        description: "Lint C/C++/Python code for robotics safety"
+        files: ^Crab_API_\(Win_and_Linux\)/src/
+        args: [--lang, cpp, python]
+        pass_filenames: true
+        require_serial: false
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.13.3
+    hooks:
+      - id: ruff
+        files: '^Crab_API_\(Win_and_Linux\)/src/'
+        types: [ python ]

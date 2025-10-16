@@ -1,23 +1,19 @@
 import queue
 import threading
-
-
-
-
-from ESPSerial import *
-from Types import *
+import struct
+from ESPSerial import ESPSerial
+from Types import Item, React
 from enum import StrEnum
+from typing import Union, Any, List
 
 class TicketType(StrEnum):
-    Sequential:str      = "S"
-    Resolving:str       = "R"
-    Asynchronous:str    = "A"
-    Interrupt:str       = "I"
+    Sequential:str = "S"
+    Resolving:str = "R"
+    Asynchronous:str = "A"
+    Interrupt:str = "I"
 
 class Crab:
-
     def __init__(self, dev: bool = False) -> None:
-
         self.serial = ESPSerial(dev)
         self.react: list[React] = []
         self.Alive:bool = True
@@ -25,23 +21,19 @@ class Crab:
 
         self.Exchange: queue.Queue[Any] = queue.Queue()
         self.Reaction: queue.Queue[Any] = queue.Queue()
-        self.Debug: queue.Queue[Any]= queue.Queue()
+        self.Debug: queue.Queue[Any] = queue.Queue()
 
         self.Thread: threading.Thread = threading.Thread(target=self._SmartRuner)
         self.Thread.start()
 
-
     def _QueSmartPop(self, queue: queue.Queue[Any],Format: str) -> Any:
         while queue.empty():
             pass
-        buffer: str =  queue.get()
-
+        buffer: str = queue.get()
         if Format == b'S':
             return bytes(buffer).decode('utf-8').rstrip('\x00')
-
         buffer: bytes = bytes(buffer[:(struct.calcsize(Format))])
         return struct.unpack(Format, buffer)[0]
-
 
     def _SmartRuner(self) -> None:
         '''
@@ -49,37 +41,28 @@ class Crab:
         :return: void
         '''
 
-        while(self.Alive):
+        while self.Alive:
 
-            packet=self.serial.read_packet()
+            packet = self.serial.read_packet()
 
             if packet is not None:
 
-                if (packet["Stream"]==b'E'):
-
+                if (packet["Stream"] == b'E'):
                     self.Exchange.put(packet["data_str"])
 
                 if (packet["Stream"] == b'R'):
-
                     self.Reaction.put(packet["data_str"])
 
                 if (packet["Stream"] == b'D'):
-
                     self.Debug.put(packet["data_str"])
 
         self.serial.close()
-
-
-
-
-
 
     def _CheckReaction(self,code: int) -> None:
         for element in self.react:
             print(element)
 
-
-    def send(self,type: TicketType ,items: List[Item] ,resolver : Union[React, None], chained: bool )-> int:
+    def send(self, type: TicketType, items: List[Item], resolver: Union[React, None], chained: bool) -> int:
         '''
         Used to send a motor control command to the Esp32
         :param type: the Type of command "I" for "Interrupt","S" for "Sequential","R" for "Resolving","A" for "Asynchronous"
@@ -89,16 +72,8 @@ class Crab:
         :return: ticket number
         '''
 
-        Ticket: int =-1
-
-
-
-
-
         # todo
         # Add restraints later
-
-
 
         # todo
         # Request ticket
@@ -110,18 +85,16 @@ class Crab:
             return -1
 
         # Receve Ticket
-        ticket = self._QueSmartPop(self.Exchange,"<I")
+        ticket: int = self._QueSmartPop(self.Exchange,"<I")
 
         if self.dev:
             print("Ticket:" + str(ticket))
 
-
         # Format ticket
         if self.dev:
-            print("sending:"+ "FormatTicket" + struct.pack('i', ticket).decode('latin-1') + type)
+            print("sending:" + "FormatTicket" + struct.pack('i', ticket).decode('latin-1') + type)
         self.serial.send_packet(0, b"FormatTicket" + struct.pack('i', ticket) + type.encode('utf-8'))
         # Load ticket
-
 
         for item in items:
             Strip: str = b"LoadTicket"
@@ -133,26 +106,13 @@ class Crab:
             Strip += item.command.encode('utf-8') #string
             for point in item.values:
                 Strip += item.Press(point)
-            self.serial.send_packet(0,  Strip)
-
-
-
-
-
-
-
+            self.serial.send_packet(0, Strip)
         # Punch ticket
-        self.serial.send_packet(0, b"PunchTicket"+struct.pack('I', ticket))
-
-
+        self.serial.send_packet(0, b"PunchTicket" + struct.pack('I',ticket))
         # todo
         # Add resolver to the self.react
-
-
-
         # todo
-        return 0
-
+        return ticket
 
     def CloseTicket(self,ticket: int) -> None:
         print('Closing Ticket')
@@ -173,10 +133,10 @@ class Crab:
 
         # todo
         # send "GetHealth" to esp32 along with the type
-        self.serial.write(("GetHealth"+type).encode('utf-8'))
+        self.serial.write(("GetHealth" + type).encode('utf-8'))
 
         return self.serial.readline()
 
-    def close(self)->None:
-         self.Alive=False
-         self.Thread.join()
+    def close(self) -> None:
+        self.Alive = False
+        self.Thread.join()

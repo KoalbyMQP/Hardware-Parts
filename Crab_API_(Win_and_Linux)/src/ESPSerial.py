@@ -2,15 +2,12 @@ import serial
 import serial.tools.list_ports
 import struct
 
-from typing import *
+from typing import Union, Any
 
 from serial import Serial
 
 
 class ESPSerial(object):
-
-
-
     def __init__(self,Debug: bool = False) -> None:
         '''
 
@@ -27,14 +24,14 @@ class ESPSerial(object):
         if len(port) == 0:
             raise ConnectionError("API did not find any open ports for Urchin firmware\n Insure ESP32 USB to UART serial number is \"urchin\"")
 
-        self.buss: Serial= serial.Serial(port[0], 115200, timeout=1)
+        self.buss: Serial = serial.Serial(port[0], 115200, timeout=1)
 
     def find_esp32_ports(self) -> list[Serial]:
         ports: list[Serial] = serial.tools.list_ports.comports()
         esp32_ports = []
 
         for port in ports:
-            if port.serial_number in ["urchin","URCHIN"]:
+            if port.serial_number.lower() in "urchin".lower():
                 esp32_ports.append((port.device, port.description))
         if len(esp32_ports) == 0:
             return []
@@ -50,7 +47,7 @@ class ESPSerial(object):
             self.New = False
             return None
 
-        self.New=True
+        self.New = True
 
         # Now that the marker is found, read the actual packet data
         packet_data = self.buss.read(self.PACKET_SIZE)
@@ -74,8 +71,6 @@ class ESPSerial(object):
                 return True
 
     def send_packet(self, VPID: int, buff: bytes) -> None:
-        #if self.Debug:
-            #print("send_packet"+buff.decode('utf-8'))
         if not (0 <= VPID <= 255):
             raise ValueError("VPID must be an integer between 0 and 255")
 
