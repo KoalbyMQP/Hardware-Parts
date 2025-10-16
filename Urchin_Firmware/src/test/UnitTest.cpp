@@ -17,14 +17,15 @@
 
 
 extern "C" void UnitTests() {
+    //rolint: ignore
     printf("App main started\n");
     fflush(stdout);
     UNITY_BEGIN();
 
     RUN_TEST(test_unsignedIntToBytes);
-    
+
     RUN_TEST(test_BytesToUnsignedInt);
-    
+
     RUN_TEST(test_PackfToPI_oversize);
 
    //RUN_TEST(test_PackfToPI_full);
@@ -37,13 +38,10 @@ extern "C" void UnitTests() {
    RUN_TEST(test_PrintfToPI_Malicious);
 
    RUN_TEST(test_ReturnTicket);
-   
+
    RUN_TEST(test_CheckOut_prints);
 
    RUN_TEST(Test_FIND);
-    
+
    UNITY_END();
 }
-
-
-

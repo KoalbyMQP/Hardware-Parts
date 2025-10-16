@@ -22,11 +22,3 @@ class Memory():
 
     def __repr__(self):
         "Memory:Type %s, Bytes %d, ROM %d, RAM %d, Max %d, Perm %s" % (self.Type, self.Bytes, self.ROM, self.RAM, self.Max, self.Perm)
-
-
-
-
-
-
-
-

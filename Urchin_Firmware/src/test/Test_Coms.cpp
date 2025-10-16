@@ -28,10 +28,10 @@ uint8_t test_VPID = 0x99;
 void test_PackfToPI_oversize(void){
     char big[COMS_SIZE + 1];
     memset(big, 'X', sizeof(big));//Fill big with X
-    
+
 
     QueueHandle_t tester = xQueueCreate(1, sizeof(MSG));
-    TEST_ASSERT_NOT_NULL(tester); 
+    TEST_ASSERT_NOT_NULL(tester);
     int t = PackfToPI(tester, test_VPID, big, sizeof(big));
     TEST_ASSERT_EQUAL(COMS_SIZE - sizeof(big), t);
     vQueueDelete(tester);
@@ -41,7 +41,7 @@ void test_PackfToPI_oversize(void){
 void test_PackfToPI_full(void){//test if function properly checks if queue is full
     MSG test_block{};
     test_block.VPID = test_VPID;
-    
+
 
     char buff[COMS_SIZE];
     memset(buff, 'A', COMS_SIZE);
@@ -50,7 +50,7 @@ void test_PackfToPI_full(void){//test if function properly checks if queue is fu
     QueueHandle_t tester = xQueueCreate(1, sizeof(MSG));
     TEST_ASSERT_NOT_NULL(tester);
 
-    
+
     //strncpy(test_block.data, buff, COMS_SIZE);
     xQueueSend(tester, &test_block, 0);//fill queue
 
@@ -58,7 +58,7 @@ void test_PackfToPI_full(void){//test if function properly checks if queue is fu
     TEST_ASSERT_EQUAL(QueFull, t);
 
     vQueueDelete(tester);
-    
+
 }//Talk w/Gabe about this, you can't test for queFull?
 
 void test_PackfToPI_Success(void){
@@ -119,8 +119,3 @@ void test_PrintfToPI_Malicious(void){
     TEST_ASSERT_EQUAL(URCHIN_ERROR_Malicious, ret);
 
 }
-
-
-
-
-

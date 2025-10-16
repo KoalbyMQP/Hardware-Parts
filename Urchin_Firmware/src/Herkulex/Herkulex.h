@@ -10,29 +10,29 @@
  */
 
 /*
- Hekulex.h - Library for Dongbu Herkulex DRS-0101/DRS-0201 
+ Hekulex.h - Library for Dongbu Herkulex DRS-0101/DRS-0201
  Copyright (c) 2012 - http://robottini.altervista.org
  Refactored by Gabriel Weaver 6/23/2025
  Original Created by Alessandro on 09/12/2012.
- 
+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,  
+
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
+
  Herkulex.h
     PLEASE START READING: Herkulex Servo Manual (http://www.hovis.co.kr/guide/herkulexeng.pdf)
  *****************************************************************************
- 
+
  IMPORTANT:
   This library only works for ESP-IDF
  *****************************************************************************
@@ -43,7 +43,7 @@
  Contact: alegiaco@gmail.com
  Web:     http://robottini.altervista.org
 
- *****************************************************************************  
+ *****************************************************************************
 */
 
 #ifdef __cplusplus
@@ -612,7 +612,7 @@ private:
   uart_port_t port; /**< The UART port for motor movement */
   int conta; /**< Packet buffer index (used when filling dataEx[] with bytes) */
   int playTime; /**< Motion duration in units of 11.2 ms (0–255) */
- 
+
 };
 
 extern HerkulexClass Herkulex;

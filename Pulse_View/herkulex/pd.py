@@ -49,7 +49,7 @@ class Decoder(srd.Decoder):
         0x09: 'REBOOT'
     }
 
-    
+
 
     MotorMemory = []
 
@@ -750,7 +750,3 @@ class Decoder(srd.Decoder):
 
             # fallback (debug)
             # self.put(ss, es, self.out_ann, [1, ["Unknown pkt:%s" % ptype, str(data)]])
-
-
-
-
