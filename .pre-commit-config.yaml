@@ -13,15 +13,25 @@ repos:
     rev: 0.1.11
     hooks:
       - id: rolint
+        name: "Crab-RoLint"
+        description: "Lint Python code for robotics safety"
+        files: '^Crab_API/src/'
+        args: ['--lang', 'cpp', 'python']
+
+      - id: rolint
+        name: "Urchin-RoLint"
+        description: "Lint C/C++ code for robotics safety"
+        files: '^Urchin_Firmware/src/'
+        args: ['--lang', 'cpp', 'c']
+
+      - id: rolint
         name: "RoLint"
-        description: "Lint C/C++/Python code for robotics safety"
-        files: ^Crab_API_\(Win_and_Linux\)/src/
-        args: [--lang, cpp, python]
-        pass_filenames: true
-        require_serial: false
+        description: "Lint C/C++ code for robotics safety"
+        args: ['--lang', 'cpp', 'c', 'Python']
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.13.3
     hooks:
       - id: ruff
-        files: '^Crab_API_\(Win_and_Linux\)/src/'
+        files: '^Crab_API/src/'
         types: [ python ]
