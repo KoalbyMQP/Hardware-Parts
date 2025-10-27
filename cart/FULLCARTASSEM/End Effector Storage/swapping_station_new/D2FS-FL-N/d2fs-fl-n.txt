@@ -1,0 +1,14 @@
+﻿"Symbol";"Value";"Unit";
+"REFERENCE";"D2FS-FL-N";"";
+"TraceParts.PartVersion";"1.0.2";"";
+"SUPPLIER";"OMRON";"";
+"TraceParts.PartStatus";"Published";"";
+"TraceParts.PartNumber";"10-06082015-068996";"";
+"TraceParts.PartLanguage";"en";"";
+"DESIGN";"Ultra Subminiature Basic Switch D2FS, PCB terminals (Straight) , Hinge lever ";"";
+"TraceParts.InstanceId";"10-06082015-0689963Q9PNZHZPR4X2U0JBOR4P0OTE";"";
+"TraceParts.PartTitle";"Ultra Subminiature Basic Switch – D2FS";"";
+"OMNICLASS23";"23.35.37.00";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartStatusId";"";"";
+"TraceParts.ClassPath";"OMRON:/F_OMRON/OMRON.050/OMRON.050.040/OMRON.050.040.050/10-06082015-068996";"";
