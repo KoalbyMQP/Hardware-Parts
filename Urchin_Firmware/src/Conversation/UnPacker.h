@@ -6,12 +6,12 @@
 
 #include <string.h>
 #include "Global/GLOBAL.h"
+#include "ESP_PI_Communication/Receving.h"
 
 
 
 
-#define ContextWordSize 15
-#define NumOfActions 11
+
 
 
 
@@ -22,6 +22,7 @@ int UnpackerInit();
 
 
     typedef struct Context Context;  // Forward declaration
+
     /**
      *@brief A context is a function to be called when a word is seen in message from the PI
      */
@@ -128,6 +129,12 @@ int UnpackerInit();
     int GetHealth(const char* buffer);
 
 
+    /**
+    * To be called when the Pi wants to add a motor entry from the bridge file
+    * @param buffer the Type of health
+    * @return An Error
+    */
+    int Bridge(const char* buffer);
 
     int LoadTicket(const char* buffer);
     int FormatTicket(const char* buffer);

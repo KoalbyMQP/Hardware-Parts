@@ -10,17 +10,13 @@
 
 
 
-
+//Local
 #include "UnPacker.h"
-
-#include <ESP_PI_Communication/Coms.h>
+#include "Global/Bridge.h"
 #include "ESP_PI_Communication/Shipping.h"
 #include "Global/Errors.h"
 #include "Ticketing/TicketNum.h"
 #include "ESP_PI_Communication/MSGQueue.h"
-
-
-
 #include "Herkulex/Herkulex.h"
 
 Ticket* Tickets[MaxTickets];
@@ -273,6 +269,30 @@ int GetHealth(const char* buffer) {
 return 0;
 }
 
+
+int Bridge(const char* buffer) {
+    (void) PrintfToPI(DebugQueue,0,"Bridge");
+
+    if (0 == strncmp("Add",buffer,3)) {
+        (void) PrintfToPI(DebugQueue,0,"BridgeAdd");
+        BridgeMotor *motor = (BridgeMotor*)SkipFoward(buffer,3);
+        (void) PrintfToPI(DebugQueue,0,"%s",motor->Joint);
+
+    }
+    if (0 == strncmp("Rem",buffer,3)) {
+
+    }
+
+    if (0 == strncmp("Read",buffer,4)) {
+
+    }
+
+
+
+    //(void) PrintfToPI(ExchangeQueue,"GetHealth is being added");
+    //DoSomething();
+    return 0;
+}
 
 
 
