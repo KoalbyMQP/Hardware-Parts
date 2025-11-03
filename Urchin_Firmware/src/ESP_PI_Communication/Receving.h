@@ -16,6 +16,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+#define ContextWordSize 15
+#define NumOfActions 11
+
+
 /**
      * @brief Receiving task process, Ment to handle incoming going communication to the PI, command validation, and pushing to the Queue
      * @details BEHAVOR:Will receve a message then sent it to the context of its PID then loop.
