@@ -2,6 +2,7 @@ import struct
 import tomlkit_extras
 from tomlkit_extras import load_toml_file, TOMLDocumentDescriptor, InvalidFieldError, InvalidArrayOfTablesError
 from typing import Union
+from ESPSerial import *
 import os
 
 def IntSToByte(number:int)->bytes:
@@ -10,11 +11,20 @@ def IntSToByte(number:int)->bytes:
 class Motor:
     def __init__(self, Number:int, Brand:str, Model:str, Joint:str, Bounds:list[int], AlignmentAngle:int):
         self.Number = Number
-        self.Brand = Brand
-        self.Model = Model
-        self.Joint = Joint
+        self.Brand = Brand.encode('utf-8')
+        self.Model = Model.encode('utf-8')
+        self.Joint = Joint.encode('utf-8')
         self.Bounds = Bounds
         self.AlignmentAngle = AlignmentAngle
+
+    def print(self):
+        print(self.Number)
+        print(self.Brand)
+        print(self.Model)
+        print(self.Joint)
+        print(str(self.Bounds[0])+":"+str(self.Bounds[1]))
+        print(self.AlignmentAngle)
+        print()
 
 class Bridge:
     VPID: int = 0
@@ -58,11 +68,11 @@ class Bridge:
         AlignmentAngleFormat + \
         NextNodeFormat
 
-    def __init__(self,Path: str):
+    def __init__(self,Path: str, serial:ESPSerial):
         # --- Set up the path ---
         self.Path = Path
         self.absolute_path = os.path.abspath(self.Path)
-
+        self.Serial = serial
 
 
         # --- Read and parse TOML file ---
@@ -107,11 +117,15 @@ class Bridge:
             if outPut is not None:
                 raise TomlValueError(outPut.get("Message"),self.absolute_path,outPut.get("Line"))
 
+        for index, motor in enumerate(Motors, start=1):
+            self.Motors.append(self.AddMotor(motor,index))
+
+        for index, motor in enumerate(self.Motors, start=1):
+            motor.print()
+
 
 
     def validateMotor(self, motor:list[tomlkit_extras.descriptor._descriptors.TableDescriptor], index:int) -> Union[dir, None]:
-        print(f"\nOccurrence {index}:")
-
         MotorHeaderLine = motor.line_no
         size=len(self.Motor_format)
         for task in self.Motor_format:
@@ -157,8 +171,35 @@ class Bridge:
     def ValadatePack(Message:str, Line:int) -> dir:
         return {"Message":Message, "Line":Line}
 
-    def send(self, index:int , last:bool) -> None:
-        print("send")
+
+
+    def AddMotor(self, motor:list[tomlkit_extras.descriptor._descriptors.TableDescriptor], index:int) -> Motor:
+        Number = 0
+        Brand = ""
+        Model = ""
+        Joint = ""
+        Bounds = []
+        AlignmentAngle = 0
+
+        Number = motor.fields.get(self.Motor_format[0][0],None).value
+        Brand = motor.fields.get(self.Motor_format[1][0], None).value
+        Model = motor.fields.get(self.Motor_format[2][0], None).value
+        Joint = motor.fields.get(self.Motor_format[3][0], None).value
+        Bounds = motor.fields.get(self.Motor_format[4][0], None).value
+        AlignmentAngle = motor.fields.get(self.Motor_format[5][0], None).value
+
+        return Motor(Number,Brand,Model,Joint,Bounds,AlignmentAngle)
+
+    def SendAll(self) -> None:
+        for index, motor in enumerate(self.Motors, start=1):
+            if index == len(self.Motors):
+                self.Send(motor,True)
+            else:
+                self.Send(motor,False)
+
+    def Send(self,motor:Motor, last:bool) -> None:
+        packed_data = struct.pack(self.DataStruct, motor.Number, motor.Brand, motor.Model, motor.Joint, motor.Bounds[0], motor.Bounds[1], motor.AlignmentAngle, last)
+        self.Serial.send_packet(0,b"BridgeAdd" + packed_data)
 
 # class FileVersionError(Exception):
 #     """Raised when a file has an unsupported or incorrect version."""

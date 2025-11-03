@@ -5,6 +5,7 @@ from ESPSerial import ESPSerial
 from Types import Item, React
 from enum import StrEnum
 from typing import Union, Any, List
+from Bridge import Bridge
 
 class TicketType(StrEnum):
     Sequential:str = "S"
@@ -13,8 +14,11 @@ class TicketType(StrEnum):
     Interrupt:str = "I"
 
 class Crab:
-    def __init__(self, dev: bool = False) -> None:
+    def __init__(self, bridge:str, dev: bool = False) -> None:
+
         self.serial = ESPSerial(dev)
+        self.bridge = Bridge(bridge,self.serial)
+        self.bridge.SendAll()
         self.react: list[React] = []
         self.Alive:bool = True
         self.dev:bool = dev
