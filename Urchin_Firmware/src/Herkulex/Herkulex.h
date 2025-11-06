@@ -192,10 +192,11 @@ enum JogLedColor {
  * @enum HerkulexModel
  */
 enum HerkulexModel {
-  MODEL_0101,
-  MODEL_0201,
-  MODEL_0601,
-  MODEL_0602
+    MODEL_0101,
+    MODEL_0201,
+    MODEL_0601,
+    MODEL_0602,
+    MODEL_None
 };
 
 enum MoveMode {

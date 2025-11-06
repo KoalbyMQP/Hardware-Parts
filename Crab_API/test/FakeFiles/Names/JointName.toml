@@ -1,4 +1,4 @@
-[meta]
+MotorNum.toml[meta]
 Version = "0.1"
 
 [[Motor]]

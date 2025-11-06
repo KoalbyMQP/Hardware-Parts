@@ -5,6 +5,7 @@ from ESPSerial import ESPSerial
 from Types import Item, React
 from enum import StrEnum
 from typing import Union, Any, List
+from Bridge import Bridge
 
 class TicketType(StrEnum):
     Sequential:str = "S"
@@ -13,8 +14,11 @@ class TicketType(StrEnum):
     Interrupt:str = "I"
 
 class Crab:
-    def __init__(self, dev: bool = False) -> None:
+    def __init__(self, bridge:str, dev: bool = False) -> None:
+
         self.serial = ESPSerial(dev)
+        self.bridge = Bridge(bridge,self.serial)
+        self.bridge.SendAll()
         self.react: list[React] = []
         self.Alive:bool = True
         self.dev:bool = dev
@@ -98,11 +102,10 @@ class Crab:
 
         for item in items:
             Strip: str = b"LoadTicket"
-            Strip += struct.pack('I', ticket)  # Unsigned int
-            Strip += struct.pack('I', item.motor) # Unsigned int
-            Strip += struct.pack('I', item.model) # Unsigned int
-            Strip += struct.pack('B', len(item.command)) #Int of 1 byte
-            Strip += struct.pack('B', len(item.values))  # Int of 1 byte
+            Strip += struct.pack(b'I', ticket)  # Unsigned int
+            Strip += struct.pack(b'50s', item.joint.encode('utf-8')) # String of max Size 50
+            Strip += struct.pack(b'B', len(item.command)) #Int of 1 byte
+            Strip += struct.pack(b'B', len(item.values))  # Int of 1 byte
             Strip += item.command.encode('utf-8') #string
             for point in item.values:
                 Strip += item.Press(point)

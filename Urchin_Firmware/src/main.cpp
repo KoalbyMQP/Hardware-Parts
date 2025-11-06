@@ -16,6 +16,7 @@
 #include "Conversation/UnPacker.h"
 #include "ESP_PI_Communication/MSGQueue.h"
 #include "ESP_PI_Communication/Receving.h"
+#include "Global/Bridge.h"
 
 uart_config_t uart_config;
 
@@ -36,6 +37,8 @@ extern "C" void app_main() {
 
 
     SetUpPins();
+
+    BridgeInit();
 
 
 
