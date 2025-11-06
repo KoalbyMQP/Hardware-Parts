@@ -6,16 +6,14 @@ class Item:
     """
 
     """
-    def __init__(self, motor: int, model: int, command: str, values: List[Union[int, float, bool]]) -> None:
+    def __init__(self, joint: str, command: str, values: List[Union[int, float, bool]]) -> None:
         """
         Makes a smart item
-        :param motor: motor ID number
-        :param model: model ID number
+        :param joint: motor joint name
         :param command: Command name
         :param values: list of values for command
         """
-        self.motor = motor
-        self.model = model
+        self.joint = joint
         self.command = command
         self.values = values
         for i in range(len(self.values)):

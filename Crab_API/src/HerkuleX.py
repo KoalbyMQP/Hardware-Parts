@@ -23,16 +23,11 @@ class HerkulexModel(IntEnum):
 
 class HerkuleX():
 
-    def MoveOne(servoID: int, Goal: int, pTime: int, color: JogLedColor, Model: HerkulexModel) -> Item:
+    def MoveOne(JoinyName: str, Goal: int, pTime: int, color: JogLedColor) -> Item:
         Name: str = "MoveOne"
-        MaxServoID: int = 245
-        if servoID < 1:
-            raise ValueError("servoID must be a positive integer.")
-        if servoID > MaxServoID:
-            raise ValueError("servoID less then",str(MaxServoID))
 
         if ((pTime > 500) or (pTime < 0)):
             raise ValueError("pTime must be between 500 and 0.")
 
-        command: Item = Item(servoID,Model,Name,[Goal, pTime, color])
+        command: Item = Item(JoinyName,Name,[Goal, pTime, color])
         return command

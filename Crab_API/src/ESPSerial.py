@@ -31,8 +31,10 @@ class ESPSerial(object):
         esp32_ports = []
 
         for port in ports:
-            if port.serial_number.lower() in "urchin".lower():
-                esp32_ports.append((port.device, port.description))
+            if port.serial_number is not None:
+                if port.serial_number.lower() in "urchin".lower():
+                    esp32_ports.append((port.device, port.description))
+
         if len(esp32_ports) == 0:
             return []
 

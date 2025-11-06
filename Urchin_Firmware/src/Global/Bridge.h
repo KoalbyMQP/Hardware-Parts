@@ -11,6 +11,7 @@
 #define BRIDGEMaxName 50
 
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,7 +20,7 @@ extern "C" {
 #include <stdbool.h>
 
 typedef struct{
-        unsigned int Num;
+        unsigned char Num;
         char Brand[BRIDGEMaxBrand];
         char Model[BRIDGEMaxModel];
         char Joint[BRIDGEMaxName];
@@ -28,11 +29,17 @@ typedef struct{
         int AlignmentAngle;
         bool NextNode;
     }BridgeMotor;
+#pragma pack(pop)
 
     extern BridgeMotor BRIDGE[BRIDGEMaxNum];
     extern unsigned char BRIDGEsize;
+    //extern SemaphoreHandle_t BRIDGEMutex;
 
-    void Bridgeinit();
+    void BridgeInit();
+
+    void AddBridge(BridgeMotor* mem);
+
+    BridgeMotor* GetBridge(const char joint[]);
 
 #ifdef __cplusplus
 }

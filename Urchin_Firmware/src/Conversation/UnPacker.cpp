@@ -132,8 +132,7 @@ int LoadTicket(const char* buffer) {
     #pragma pack(push, 1)  // No padding between fields
         typedef struct{
             unsigned int ticket;
-            unsigned int motor;
-            unsigned int model;
+            char joint[BRIDGEMaxName];
             unsigned char command_len;
             unsigned char values_len;
         }PacketHeader;
@@ -158,8 +157,7 @@ int LoadTicket(const char* buffer) {
      PacketHeader *Header = (PacketHeader*) buffer;
 
     (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:ticket:%d",Header->ticket);
-    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:motor:%d",Header->motor);
-    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:model:%d",Header->model);
+    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:Joint:%s",Header->joint);
     (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:command_len:%d",Header->command_len);
     (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:values_len:%d",Header->values_len);
 
@@ -196,19 +194,49 @@ int LoadTicket(const char* buffer) {
     }
     //
 
+    BridgeMotor* Joint = GetBridge(Header->joint);
+
+    //Todo: Add a catch to see if the Joint was found and if not send an error to the Pi that it will pass up to the user.
+
+    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:ServoID:%d",Joint->Num);
+    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:Brand:%s",Joint->Joint);
+    (void)(PrintfToPI)(DebugQueue,0,"LoadTicket:Model:%s",Joint->Model);
 
 
-    Herkulex.initialize();
+    int MotorNum = Joint->Num;
+    if (strcmp(Joint->Brand,"HerkuleX")==0) {
+        Herkulex.initialize();
 
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    Herkulex.reboot(Header->motor);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    Herkulex.ACK(Header->motor);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    Herkulex.torqueON(Header->motor);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    Herkulex.moveOne(Header->motor,Variables[0].Data.Int, Variables[1].Data.Int, static_cast<JogLedColor>(Variables[2].Data.Int), static_cast<HerkulexModel>(Header->model));
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        Herkulex.reboot(MotorNum);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        Herkulex.ACK(MotorNum);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        Herkulex.torqueON(MotorNum);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+        HerkulexModel Model = MODEL_None;
+
+        if (strcmp(Joint->Model,"0101")==0) {
+             Model = MODEL_0101;
+        }else if (strcmp(Joint->Model,"0201")==0) {
+             Model = MODEL_0201;
+        }else if (strcmp(Joint->Model,"0601")==0) {
+             Model = MODEL_0601;
+        }else if (strcmp(Joint->Model,"0602")==0) {
+             Model = MODEL_0602;
+        }
+        Herkulex.moveOne(MotorNum,Variables[0].Data.Int, Variables[1].Data.Int, static_cast<JogLedColor>(Variables[2].Data.Int), Model);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+
+
+    }
+
+
+
+
+
 
 
     return 0;
@@ -275,7 +303,10 @@ int Bridge(const char* buffer) {
 
     if (0 == strncmp("Add",buffer,3)) {
         (void) PrintfToPI(DebugQueue,0,"BridgeAdd");
-        BridgeMotor *motor = (BridgeMotor*)SkipFoward(buffer,3);
+        BridgeMotor *motor = (BridgeMotor*)(buffer+3);
+
+        AddBridge(motor);
+
         (void) PrintfToPI(DebugQueue,0,"%s",motor->Joint);
 
     }

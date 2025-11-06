@@ -59,6 +59,7 @@ class Bridge:
 
 
     DataStruct:bytes = \
+        b'<' + \
         MotorNumFormat + \
         MotorBrandFormat + \
         MotorModelFormat + \
@@ -74,6 +75,8 @@ class Bridge:
         self.absolute_path = os.path.abspath(self.Path)
         self.Serial = serial
 
+
+        print(self.DataStruct)
 
         # --- Read and parse TOML file ---
         with open(self.Path, "r", encoding="utf-8") as f:
@@ -116,6 +119,18 @@ class Bridge:
             # --- Print error if one was found ---
             if outPut is not None:
                 raise TomlValueError(outPut.get("Message"),self.absolute_path,outPut.get("Line"))
+            #else:
+            #    self.Motors.append()
+
+        # Get the data into the objects
+
+
+        # Add to the ROS Posting
+
+
+
+        # Send the values to the ESP-32
+
 
         for index, motor in enumerate(Motors, start=1):
             self.Motors.append(self.AddMotor(motor,index))
@@ -160,6 +175,15 @@ class Bridge:
                 if Type != targetType:
                     return self.ValadatePack(f"Value in \"{task[0]}\" is not an {str(targetType)}", line)
         return None
+
+
+    def GetMotor(self, motor:list[tomlkit_extras.descriptor._descriptors.TableDescriptor]) -> Motor:
+        print(f"\nGetMotor")
+
+
+
+
+
 
     def CheckList(self, List:list, Type:type) -> bool:
         for item in List:
