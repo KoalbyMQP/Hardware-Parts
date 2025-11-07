@@ -88,7 +88,7 @@ class Decoder(srd.Decoder):
             Memory.Memory("Firmware Version 2/2", 1, 3, None, None, None, "RO", None),
             Memory.Memory("Baud Rate", 1, 4, None, None, None, "RW", None),
             Memory.Memory("ID", 1, 6, 0, 0x00, 0xFD, "RW", None),
-            Memory.Memory("ACK Policy", 1, 7, 1, 0x00, 0x20, "RW", None),
+            Memory.Memory("ACK Policy", 1, 7, 1, 0x00, 0x20, "RW", self.ACK),
             Memory.Memory("Alarm LED Policy", 1, 8, 2, 0x00, 0x7F, "RW", None),
             Memory.Memory("Torque Policy", 1, 9, 3, 0x00, 0x7F, "RW", None),
             Memory.Memory("Max Temperature", 1, 11, 5, 0, 110, "RW", None),
@@ -119,8 +119,8 @@ class Decoder(srd.Decoder):
             Memory.Memory("Inposition Margin", 1, 50, 44, 0x00, 0xFE, "RW", None),
             Memory.Memory("Calibration Difference Byte 1", 1, 52, 46, None, None, "RW", None),
             Memory.Memory("Calibration Difference Byte 2", 1, 53, 47, None, None, "RW", None),
-            Memory.Memory("Status Error", 1, None, 48, 0x00, 0x7F, "RW", None),
-            Memory.Memory("Status Detail", 1, None, 49, 0x00, 0x7F, "RW", None),
+            Memory.Memory("Status Error", 1, None, 48, 0x00, 0x7F, "RW", self.StatusError),
+            Memory.Memory("Status Detail", 1, None, 49, 0x00, 0x7F, "RW", self.StatusDetail),
             Memory.Memory("Torque Control", 1, None, 52, None, None, "RW", self.TorqueControl),
             Memory.Memory("LED Control", 1, None, 53, 0x00, 0x07, "RW", None),
             Memory.Memory("Voltage", 1, None, 54, 0, 200, "RO", None),
@@ -183,7 +183,8 @@ class Decoder(srd.Decoder):
         return
 
     def decode_packet(self):
-        command_name=""
+        command_name = ""
+        ACK = False
         for i in range(1,7):
             if i==1: #header
                 start = self.RecordData[0].start
@@ -225,9 +226,20 @@ class Decoder(srd.Decoder):
                 number = self.RecordData[i].data
 
                 command_name = self.commands.get(number, "UNKNOWN")
+
                 long_text = command_name
                 mid_text = "%d" % number
                 short_text = "%d" % number
+
+                # Check if its an ACK Packet
+                if (command_name == "UNKNOWN"):
+                    command_name = self.commands.get(number-0x40, "UNKNOWN")
+                    if (command_name != "UNKNOWN"):
+                        ACK = True
+                        long_text = "ACK "+command_name
+                        mid_text = "ACK %d" % number
+                        short_text = "%d" % number
+
                 self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
 
@@ -304,31 +316,31 @@ class Decoder(srd.Decoder):
                 self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
         elif command_name=="RAM_WRITE":
-            self.RAM_Write()
+            self.RAM_Write(ACK)
 
         elif command_name=="RAM_READ":
-            self.RAM_Read()
+            self.RAM_Read(ACK)
 
         elif command_name=="EEP_WRITE":
-            self.ROM_Write()
+            self.ROM_Write(ACK)
 
         elif command_name=="EEP_READ":
-            self.ROM_Read()
+            self.ROM_Read(ACK)
 
         elif command_name=="I_JOG":
-            self.I_JOG()
+            self.I_JOG(ACK)
 
         elif command_name == "S_JOG":
-            self.S_JOG()
+            self.S_JOG(ACK)
 
         elif command_name=="STAT":
-            self.STAT()
+            self.STAT(ACK)
 
         elif command_name=="ROLLBACK":
-            self.ROLLBACK()
+            self.ROLLBACK(ACK)
 
         elif command_name=="REBOOT":
-            self.REBOOT()
+            self.REBOOT(ACK)
 
 
 
@@ -359,13 +371,13 @@ class Decoder(srd.Decoder):
 
 
 
-    def ROM_Write(self):
+    def ROM_Write(self, ACK):
         return
 
-    def ROM_Read(self):
+    def ROM_Read(self, ACK):
         return
 
-    def RAM_Write(self):
+    def RAM_Write(self, ACK):
         RamIndex = 7
         RamObject = self.GetMemFromRAM(self.RecordData[RamIndex].data)
 
@@ -423,7 +435,11 @@ class Decoder(srd.Decoder):
             RamObject.Fucntion(RamIndex,self.RecordData)
 
         else:
-            for i in range(9, self.RecordLength): #Data values
+            # Offet for the ACK
+            Offet = 0
+            if (ACK):
+                Offet = 2
+            for i in range(9, self.RecordLength-Offet): #Data values
                 start = self.RecordData[i].start
                 end = self.RecordData[i].end
                 number = self.RecordData[i].data
@@ -434,155 +450,230 @@ class Decoder(srd.Decoder):
 
                 self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
+
+
+        if (ACK):
+            self.StatusError(self.RecordLength - 2, self.RecordData)
+            self.StatusDetail(self.RecordLength - 1, self.RecordData)
+
+
         return
 
-    def RAM_Read(self):
-        return
+    def RAM_Read(self, ACK):
+        RamIndex = 7
+        RamObject = self.GetMemFromRAM(self.RecordData[RamIndex].data)
 
-    def I_JOG(self):
-        return
+        # Name tag
+        name = RamObject.Type
+        start = self.RecordData[RamIndex].start
+        end = self.RecordData[RamIndex].end
 
-    def S_JOG(self):
-        Index = 7
-
-        # Playtime
-        start = self.RecordData[Index].start
-        end = self.RecordData[Index].end
-        number = self.RecordData[Index].data
-
-        time = number * 11.2
-
-        long_text = "PTime: %.1fms" % time
-        mid_text = "PT: %.1fms" % time
-        short_text = "%.1f" % time
+        long_text = "RAM: " + name
+        mid_text = name
+        short_text = name
 
         self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
-        Index = Index + 1
+        # Permission tag
+        Permission = RamObject.Perm
+        long_text = "Permission: " + Permission
+        mid_text = "Perm: " + Permission
+        short_text = Permission
 
+        self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
 
-        # Position
-        JOG_LSB = self.RecordData[Index].data
-        JOG_MSB = self.RecordData[Index + 1].data
-        Position = (JOG_MSB << 8) | JOG_LSB
-        start = self.RecordData[Index].start
-        end = self.RecordData[Index + 1].end
-        long_text = "Goal %d" % Position
-        mid_text = "%d" % Position
-        short_text = "%d" % Position
+        RamIndex = RamIndex + 1
+
+        # Sub length
+        start = self.RecordData[RamIndex].start
+        end = self.RecordData[RamIndex].end
+        number = self.RecordData[RamIndex].data
+
+        long_text = "Sub Length: %d" % number
+        mid_text = "SL %d" % number
+        short_text = "%d" % number
         self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
 
-        Index = Index + 2
+        RamIndex = RamIndex + 1
 
-        # Set
-        start = self.RecordData[Index].start
-        end = self.RecordData[Index].end
-        SET = self.RecordData[Index].data
+        # Packet Sub data
+        if (RamObject.Fucntion != None):
+            RamObject.Fucntion(RamIndex, self.RecordData)
 
-        #Flips the bit order
-        SET = int('{:08b}'.format(SET)[::-1], 2)
-
-
-
-        # Set -> Direction
-        if (SET & 0b00000001) == 0:
-            direction = "CCW"
         else:
-            direction = "CW"
+            # Offet for the ACK
+            Offet = 0
+            if(ACK):
+                Offet = 2
 
-        long_text = direction
-        mid_text = direction
-        short_text = direction
+            for i in range(9, self.RecordLength - Offet):  # Data values
+                start = self.RecordData[i].start
+                end = self.RecordData[i].end
+                number = self.RecordData[i].data
 
-        SubStart = self.SubTime(start, end, 8 , 10)
-        SubEnd = self.SubTime(start, end, 9, 10)
-        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+                long_text = "Value: %d" % number
+                mid_text = "Val %d" % number
+                short_text = "%d" % number
+
+                self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+        if(ACK):
+            self.StatusError(self.RecordLength-2,self.RecordData)
+            self.StatusDetail(self.RecordLength-1,self.RecordData)
+
+
+    def I_JOG(self, ACK):
+        return
+
+    def S_JOG(self, ACK):
+
+        if (not ACK):
+            Index = 7
+
+            # Playtime
+            start = self.RecordData[Index].start
+            end = self.RecordData[Index].end
+            number = self.RecordData[Index].data
+
+            time = number * 11.2
+
+            long_text = "PTime: %.1fms" % time
+            mid_text = "PT: %.1fms" % time
+            short_text = "%.1f" % time
+
+            self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            Index = Index + 1
+
+
+            # Position
+            JOG_LSB = self.RecordData[Index].data
+            JOG_MSB = self.RecordData[Index + 1].data
+            Position = (JOG_MSB << 8) | JOG_LSB
+            start = self.RecordData[Index].start
+            end = self.RecordData[Index + 1].end
+            long_text = "Goal %d" % Position
+            mid_text = "%d" % Position
+            short_text = "%d" % Position
+            self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            Index = Index + 2
+
+            # Set
+            start = self.RecordData[Index].start
+            end = self.RecordData[Index].end
+            SET = self.RecordData[Index].data
+
+            #Flips the bit order
+            SET = int('{:08b}'.format(SET)[::-1], 2)
+
+
+
+            # Set -> Direction
+            if (SET & 0b00000001) == 0:
+                direction = "CCW"
+            else:
+                direction = "CW"
+
+            long_text = direction
+            mid_text = direction
+            short_text = direction
+
+            SubStart = self.SubTime(start, end, 8 , 10)
+            SubEnd = self.SubTime(start, end, 9, 10)
+            self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
 
 
 
 
-        # Set -> Mode
-        if (SET & 0b10000000) == 0:
-            long_text = "Position"
-            mid_text = "Posi"
-            short_text = "P"
-            mode = "Position"
-            mode
+            # Set -> Mode
+            if (SET & 0b10000000) == 0:
+                long_text = "Position"
+                mid_text = "Posi"
+                short_text = "P"
+                mode = "Position"
+                mode
+            else:
+                long_text = "Continuous"
+                mid_text = "Cont"
+                short_text = "C"
+                mode = "Continuous"
+
+            SubStart = self.SubTime(start, end, 1, 10)
+            SubEnd = self.SubTime(start, end, 2, 10)
+            self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+            # Set -> LEDs
+            red_led = (SET & 0b00010000) != 0
+            green_led = (SET & 0b00100000) != 0
+            blue_led = (SET & 0b01000000) != 0
+
+            # Combine LED info into a readable color name (optional)
+            if red_led and green_led and blue_led:
+                led_color = "White"
+            elif red_led and green_led:
+                led_color = "Soft Green"
+            elif red_led and blue_led:
+                led_color = "Pink"
+            elif green_led and blue_led:
+                led_color = "Cyan"
+            elif red_led:
+                led_color = "Red"
+            elif green_led:
+                led_color = "Green"
+            elif blue_led:
+                led_color = "Blue"
+            else:
+                led_color = "Off"
+
+            long_text = led_color
+            mid_text = led_color
+            short_text = led_color
+            SubStart = self.SubTime(start, end, 2, 10)
+            SubEnd = self.SubTime(start, end, 5, 10)
+            self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            long_text = "Reserved"
+            mid_text = "Reserved"
+            short_text = "---"
+            SubStart = self.SubTime(start, end, 5, 10)
+            SubEnd = self.SubTime(start, end, 8, 10)
+            self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+            Index = Index + 1
+
+
+            # Servo ID
+            start = self.RecordData[Index].start
+            end = self.RecordData[Index].end
+            ServoId = self.RecordData[Index].data
+            long_text = "Servo ID %d" % ServoId
+            mid_text = "ID %d" % ServoId
+            short_text = "%d" % ServoId
+
+
+
+            self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
         else:
-            long_text = "Continuous"
-            mid_text = "Cont"
-            short_text = "C"
-            mode = "Continuous"
-
-        SubStart = self.SubTime(start, end, 1, 10)
-        SubEnd = self.SubTime(start, end, 2, 10)
-        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
-
-
-        # Set -> LEDs
-        red_led = (SET & 0b00010000) != 0
-        green_led = (SET & 0b00100000) != 0
-        blue_led = (SET & 0b01000000) != 0
-
-        # Combine LED info into a readable color name (optional)
-        if red_led and green_led and blue_led:
-            led_color = "White"
-        elif red_led and green_led:
-            led_color = "Soft Green"
-        elif red_led and blue_led:
-            led_color = "Pink"
-        elif green_led and blue_led:
-            led_color = "Cyan"
-        elif red_led:
-            led_color = "Red"
-        elif green_led:
-            led_color = "Green"
-        elif blue_led:
-            led_color = "Blue"
-        else:
-            led_color = "Off"
-
-        long_text = led_color
-        mid_text = led_color
-        short_text = led_color
-        SubStart = self.SubTime(start, end, 2, 10)
-        SubEnd = self.SubTime(start, end, 5, 10)
-        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
-
-        long_text = "Reserved"
-        mid_text = "Reserved"
-        short_text = "---"
-        SubStart = self.SubTime(start, end, 5, 10)
-        SubEnd = self.SubTime(start, end, 8, 10)
-        self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
-
-        Index = Index + 1
-
-
-        # Servo ID
-        start = self.RecordData[Index].start
-        end = self.RecordData[Index].end
-        ServoId = self.RecordData[Index].data
-        long_text = "Servo ID %d" % ServoId
-        mid_text = "ID %d" % ServoId
-        short_text = "%d" % ServoId
-
-
-
-        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
-
-
-
+            self.StatusError(self.RecordLength - 2, self.RecordData)
+            self.StatusDetail(self.RecordLength - 1, self.RecordData)
         return
 
-    def STAT(self):
+    def STAT(self, ACK):
         return
 
-    def ROLLBACK(self):
+    def ROLLBACK(self, ACK):
         return
 
-    def REBOOT(self):
+    def REBOOT(self, ACK):
         return
+
+
+
+
+# Function pointers
 
     def TorqueControl(self, Index, RecordData):
         Target = RecordData[Index]
@@ -615,6 +706,100 @@ class Decoder(srd.Decoder):
             mid_text = "Invalid"
             short_text = "Invalid"
             self.put(start, end, self.out_ann, [1, [long_text, mid_text, short_text]])
+
+    def StatusError(self, Index, RecordData):
+        Target = RecordData[Index]
+        start = Target.start
+        end = Target.end
+
+        if (Target.data == 0x00):
+            long_text = "Error Clean"
+            mid_text = "Clean"
+            short_text = "Clean"
+            self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+        else:
+            ErrorNames = ["Exceed input Voltage limit",
+                          "Exceed allowed Voltage limit",
+                          "Exceed Temperature Limit",
+                          "Invalid Packet",
+                          "Overload detected",
+                          "Reserved",
+                          "EEP REG distorted",
+                          "Reserved",
+                          ]
+
+            Byte = int('{:08b}'.format(Target.data)[::-1], 2)
+
+            for i in range(8):
+                SubStart = self.SubTime(start, end, i + 1, 10)
+                SubEnd = self.SubTime(start, end, i + 2, 10)
+
+                ErrorState = (Byte >> i) & 1
+
+                if (ErrorState == 1):
+                    long_text = ErrorNames[i]
+                    mid_text = ErrorNames[i]
+                    short_text = ErrorNames[i]
+                    self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+    def StatusDetail(self, Index, RecordData):
+        Target = RecordData[Index]
+        start = Target.start
+        end = Target.end
+        ErrorNames = ["Moving Flag",
+                      "Inposition Flag",
+                      "Checksum Error",
+                      "Unknown Command",
+                      "Exceed REG range",
+                      "Garbage detected",
+                      "Torque ON",
+                      "Reserved",
+                      ]
+
+        Byte = int('{:08b}'.format(Target.data)[::-1], 2)
+
+        for i in range(8):
+            SubStart = self.SubTime(start, end, i + 1, 10)
+            SubEnd = self.SubTime(start, end, i + 2, 10)
+
+            ErrorState = (Target.data >> i) & 1
+
+            if(ErrorState == 1):
+                long_text = ErrorNames[i]
+                mid_text = ErrorNames[i]
+                short_text = ErrorNames[i]
+                self.put(SubStart, SubEnd, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
+
+
+    def ACK(self, Index, RecordData):
+        Target = RecordData[Index]
+        start = Target.start
+        end = Target.end
+
+        long_text = "Invalid"
+        mid_text = "Invalid"
+        short_text = "Invalid"
+
+        if (Target.data == 0):
+            long_text = "No reply"
+            mid_text = "No reply"
+            short_text = "No reply"
+
+        if (Target.data == 1):
+            long_text = "Only reply to Read CMD"
+            mid_text = "Only reply to Read CMD"
+            short_text = "Only reply to Read CMD"
+
+        if (Target.data == 2):
+            long_text = "Reply to all Request Packets"
+            mid_text = "Reply to all Request Packets"
+            short_text = "Reply to all Request Packets"
+
+        self.put(start, end, self.out_ann, [0, [long_text, mid_text, short_text]])
+
+
 
     def GetMemFromRAM(self, Ram_Number):
         for i in range(len(self.MotorMemory)):
