@@ -1,0 +1,1372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="FullAssembly_AVA_2_0.SLDASM">
+  <link
+    name="chest">
+    <inertial>
+      <origin
+        xyz="0.0892982324345256 -0.0534290945517866 -0.0281807915202745"
+        rpy="0 0 0" />
+      <mass
+        value="0.756245533149595" />
+      <inertia
+        ixx="0.000668301082898205"
+        ixy="-1.35139440859027E-07"
+        ixz="-9.2399289163842E-09"
+        iyy="0.000691671010327581"
+        iyz="-6.28522357628318E-06"
+        izz="0.000928603004586102" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/chest.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.698039215686274 0.698039215686274 0.698039215686274 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/chest.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="neck">
+    <inertial>
+      <origin
+        xyz="0.000463690787653695 -0.0109798760579415 3.10387747101681E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0059406321110728" />
+      <inertia
+        ixx="7.14031423861985E-07"
+        ixy="-1.00193578163672E-08"
+        ixz="3.26838990075462E-12"
+        iyy="1.81302717415532E-06"
+        iyz="-3.65212289150348E-13"
+        izz="2.04030832261223E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/neck.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.501960784313725 0.501960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/neck.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="neckturn"
+    type="fixed">
+    <origin
+      xyz="0.0893 0.0172404124827796 0.0487349892896403"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="chest" />
+    <child
+      link="neck" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="head">
+    <inertial>
+      <origin
+        xyz="-0.00747358995694229 -0.00106377627301606 -0.041897594774668"
+        rpy="0 0 0" />
+      <mass
+        value="0.366246371096136" />
+      <inertia
+        ixx="0.000801491998977516"
+        ixy="9.63503133472914E-07"
+        ixz="3.67282857488562E-05"
+        iyy="0.000912509657481221"
+        iyz="-5.15732301957726E-07"
+        izz="0.0013811753071444" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/head.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/head.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="headnod"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5707963267949 1.5707963267949 0" />
+    <parent
+      link="neck" />
+    <child
+      link="head" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="shoulder_left">
+    <inertial>
+      <origin
+        xyz="-0.014960508361357 0.000457326070403673 -0.00139500021576919"
+        rpy="0 0 0" />
+      <mass
+        value="0.172050390082777" />
+      <inertia
+        ixx="4.32641801289025E-05"
+        ixy="-9.09540798571111E-07"
+        ixz="-2.68639813140369E-08"
+        iyy="5.80350724535564E-05"
+        iyz="6.20306258704346E-08"
+        izz="7.27906245287119E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shoulder_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.698039215686274 0.698039215686274 0.698039215686274 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shoulder_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulderspin_left"
+    type="fixed">
+    <origin
+      xyz="0.2055 0.01858 -0.002605"
+      rpy="3.1416 -1.5708 0" />
+    <parent
+      link="chest" />
+    <child
+      link="shoulder_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="bicep_left">
+    <inertial>
+      <origin
+        xyz="-0.0251588309985075 0.00108749050750701 -0.0217063873028336"
+        rpy="0 0 0" />
+      <mass
+        value="0.232287327837173" />
+      <inertia
+        ixx="6.06098632163626E-05"
+        ixy="3.20356380319867E-06"
+        ixz="-1.29351628857436E-05"
+        iyy="0.000144811374253378"
+        iyz="5.50577168533813E-07"
+        izz="0.000117148394663347" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/bicep_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.796078431372549 0.823529411764706 0.937254901960784 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/bicep_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="biceplift_left"
+    type="fixed">
+    <origin
+      xyz="-0.12 0.006 0.0485"
+      rpy="0 0 3.1416" />
+    <parent
+      link="shoulder_left" />
+    <child
+      link="bicep_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="forearm_left">
+    <inertial>
+      <origin
+        xyz="0.010986750570082 -0.00743343689945741 0.00101633253953506"
+        rpy="0 0 0" />
+      <mass
+        value="0.0700934249374858" />
+      <inertia
+        ixx="1.37578087198906E-05"
+        ixy="-1.16166485196791E-06"
+        ixz="-5.30142815762329E-08"
+        iyy="1.54385338688329E-05"
+        iyz="-3.5482705262719E-07"
+        izz="2.41047602202332E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/forearm_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/forearm_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="elbow_left"
+    type="fixed">
+    <origin
+      xyz="0.04648 0 -0.0198"
+      rpy="3.14159263868863 0 1.5707963267949" />
+    <parent
+      link="bicep_left" />
+    <child
+      link="forearm_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="wrist_left">
+    <inertial>
+      <origin
+        xyz="0.0167881965857987 0.000188627661062674 4.11019158784963E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.0359196656987808" />
+      <inertia
+        ixx="4.51461591731325E-06"
+        ixy="1.00915257076814E-07"
+        ixz="6.00348080908362E-10"
+        iyy="6.71811421908292E-06"
+        iyz="-3.24127425236609E-12"
+        izz="7.60175630822655E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrist_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrist_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wristspin_left"
+    type="fixed">
+    <origin
+      xyz="0 0.0639 0"
+      rpy="1.5707963267949 0 -1.5707963267949" />
+    <parent
+      link="forearm_left" />
+    <child
+      link="wrist_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hand_left">
+    <inertial>
+      <origin
+        xyz="5.82648050479091E-05 0.0054275285804502 -0.00057794369396949"
+        rpy="0 0 0" />
+      <mass
+        value="0.0198788406763806" />
+      <inertia
+        ixx="7.15929224631277E-06"
+        ixy="1.35075804141351E-08"
+        ixz="-9.89218394102592E-09"
+        iyy="5.02025629829375E-06"
+        iyz="2.91423359598026E-07"
+        izz="5.44465003650597E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hand_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hand_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="handcurl_left"
+    type="fixed">
+    <origin
+      xyz="-0.0252040713263239 -9.15181271650689E-05 -0.000523479401451143"
+      rpy="-1.58827404918805 -1.55819288360229 -3.14127531143594" />
+    <parent
+      link="wrist_left" />
+    <child
+      link="hand_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="shoulder_right">
+    <inertial>
+      <origin
+        xyz="-0.0151034623334599 0.00048882494525147 0.0025466105752932"
+        rpy="0 0 0" />
+      <mass
+        value="0.0933140477910859" />
+      <inertia
+        ixx="2.31532261557606E-05"
+        ixy="-2.39939101317106E-07"
+        ixz="2.65955334884805E-08"
+        iyy="3.1267063271778E-05"
+        iyz="-6.14537856544514E-08"
+        izz="3.98010856684277E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shoulder_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shoulder_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulderspin_right"
+    type="fixed">
+    <origin
+      xyz="-0.0269 0.01858 -0.002605"
+      rpy="3.1459 -1.5708 0" />
+    <parent
+      link="chest" />
+    <child
+      link="shoulder_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="bicep_right">
+    <inertial>
+      <origin
+        xyz="0.0796648768553722 0.0258275567543078 -0.0483390802875837"
+        rpy="0 0 0" />
+      <mass
+        value="0.15299700445975" />
+      <inertia
+        ixx="4.99566908852529E-05"
+        ixy="2.91598120482247E-06"
+        ixz="2.30425085672802E-05"
+        iyy="0.000111124356282393"
+        iyz="-1.36254174424389E-06"
+        izz="8.0181466520422E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/bicep_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/bicep_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="biceplift_right"
+    type="fixed">
+    <origin
+      xyz="0 0.0302 0"
+      rpy="0 -0.26691 3.1416" />
+    <parent
+      link="shoulder_right" />
+    <child
+      link="bicep_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="forearm_right">
+    <inertial>
+      <origin
+        xyz="0.0101931575477227 -0.000244283982770765 0.00509798701513962"
+        rpy="0 0 0" />
+      <mass
+        value="0.150300432289377" />
+      <inertia
+        ixx="3.59406813189229E-05"
+        ixy="-3.39689110086657E-07"
+        ixz="-1.14915773240393E-06"
+        iyy="5.13423905569095E-05"
+        iyz="5.26170731114856E-08"
+        izz="4.74202069974423E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/forearm_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/forearm_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="elbow_right"
+    type="fixed">
+    <origin
+      xyz="0.108181033891431 0.024199999999934 -0.0593342557565269"
+      rpy="-1.5707963267949 0.266912354008724 0" />
+    <parent
+      link="bicep_right" />
+    <child
+      link="forearm_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="wrist_right">
+    <inertial>
+      <origin
+        xyz="0.0167527050147577 -4.07423573235005E-06 0.0105096554378538"
+        rpy="0 0 0" />
+      <mass
+        value="0.0358643168523759" />
+      <inertia
+        ixx="4.50562758365512E-06"
+        ixy="-5.90064849733646E-10"
+        ixz="-1.0096865191529E-07"
+        iyy="7.59654692338334E-06"
+        iyz="-6.49973304194166E-12"
+        izz="6.71245954698566E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrist_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/wrist_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wristspin_right"
+    type="fixed">
+    <origin
+      xyz="0.11038 -0.0107 0"
+      rpy="1.5707963267949 0 3.14159265358979" />
+    <parent
+      link="forearm_right" />
+    <child
+      link="wrist_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hand_right">
+    <inertial>
+      <origin
+        xyz="5.8286960829752E-05 0.00542751948597964 -0.000577929046868368"
+        rpy="0 0 0" />
+      <mass
+        value="0.0198788582866051" />
+      <inertia
+        ixx="7.15929812105154E-06"
+        ixy="1.35118261497187E-08"
+        ixz="-9.88373836091227E-09"
+        iyy="5.02026041955093E-06"
+        iyz="2.91426278842689E-07"
+        izz="5.44465226168898E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hand_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hand_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="handcurl_right"
+    type="fixed">
+    <origin
+      xyz="-0.0252040713263239 0.000523479401451142 0.010791518127165"
+      rpy="-0.0171604054433481 0 1.55819288423683" />
+    <parent
+      link="wrist_right" />
+    <child
+      link="hand_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="waist">
+    <inertial>
+      <origin
+        xyz="-3.44737193930245E-08 0.0455143551632032 0.0470503088429638"
+        rpy="0 0 0" />
+      <mass
+        value="0.0611615094926185" />
+      <inertia
+        ixx="0.000114716253669831"
+        ixy="1.78378124506269E-10"
+        ixz="1.51429838382201E-10"
+        iyy="0.00011028221072173"
+        iyz="-6.66883762005127E-06"
+        izz="4.69040065079021E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/waist.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/waist.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="chestturn"
+    type="fixed">
+    <origin
+      xyz="0.0893000000000402 0.0856804124827968 -0.218555010710356"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="chest" />
+    <child
+      link="waist" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="abdominals">
+    <inertial>
+      <origin
+        xyz="0.0164049074952044 -0.000190059855064359 0.00156630945036944"
+        rpy="0 0 0" />
+      <mass
+        value="0.353477688972343" />
+      <inertia
+        ixx="0.00011879519046995"
+        ixy="-1.37080676990063E-06"
+        ixz="2.86474298599761E-06"
+        iyy="0.000154913295148442"
+        iyz="1.81295131444756E-08"
+        izz="0.000137703841225504" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/abdominals.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/abdominals.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="waistlean"
+    type="fixed">
+    <origin
+      xyz="0 0 0.0458"
+      rpy="0 0 1.57079632679492" />
+    <parent
+      link="waist" />
+    <child
+      link="abdominals" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="pelvis">
+    <inertial>
+      <origin
+        xyz="-0.0188548563894904 0.021769362365155 -0.0191394575221764"
+        rpy="0 0 0" />
+      <mass
+        value="0.351826948016737" />
+      <inertia
+        ixx="0.000109850249435029"
+        ixy="1.7662904487763E-06"
+        ixz="-4.63183552545559E-07"
+        iyy="0.000157686407509566"
+        iyz="-3.86686841264087E-07"
+        izz="0.000140344073603852" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/pelvis.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/pelvis.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="abdominalcrunch"
+    type="fixed">
+    <origin
+      xyz="-0.0921999997187021 0.0215999999851954 0.030999999718674"
+      rpy="0 0 -3.14159265358979" />
+    <parent
+      link="abdominals" />
+    <child
+      link="pelvis" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hip_left">
+    <inertial>
+      <origin
+        xyz="-0.015941717422188 -0.0507406124067393 -0.000107111274811913"
+        rpy="0 0 0" />
+      <mass
+        value="0.178323461769503" />
+      <inertia
+        ixx="7.48278219001438E-05"
+        ixy="-4.30291794874961E-06"
+        ixz="2.15197259539884E-06"
+        iyy="8.3651422102777E-05"
+        iyz="1.34593544314665E-06"
+        izz="5.32447036253966E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hip_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hip_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hiplift_left"
+    type="fixed">
+    <origin
+      xyz="0 0.0432004617004451 -0.0197999999999746"
+      rpy="3.14159265358979 0 0" />
+    <parent
+      link="pelvis" />
+    <child
+      link="hip_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hipconnector_left">
+    <inertial>
+      <origin
+        xyz="0.00115186989150601 -0.000393539966050738 -0.0271334002479097"
+        rpy="0 0 0" />
+      <mass
+        value="0.169598324220792" />
+      <inertia
+        ixx="7.23851064054037E-05"
+        ixy="1.3508730162232E-10"
+        ixz="-2.46451034571688E-07"
+        iyy="5.76100467333271E-05"
+        iyz="1.36541757696437E-06"
+        izz="4.31561547547689E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hipconnector_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hipconnector_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hiprotate_left"
+    type="fixed">
+    <origin
+      xyz="0.0337999999999986 -0.052955999999967 -0.0273626927695556"
+      rpy="3.14159265358979 0 3.14159265358977" />
+    <parent
+      link="hip_left" />
+    <child
+      link="hipconnector_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="thigh_left">
+    <inertial>
+      <origin
+        xyz="0.00570500117814771 0.0662245721850072 -1.78324785547399E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.373973684441803" />
+      <inertia
+        ixx="0.000231138321001928"
+        ixy="-1.3950246129127E-05"
+        ixz="-1.7987413894397E-09"
+        iyy="0.000118273958948663"
+        iyz="-1.69543909258185E-09"
+        izz="0.000274294457824515" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/thigh_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/thigh_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="thighlift_left"
+    type="fixed">
+    <origin
+      xyz="-0.18200046170042 0.0191289708184052 -0.0126211927695132"
+      rpy="0 0 -1.57079632679492" />
+    <parent
+      link="hipconnector_left" />
+    <child
+      link="thigh_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="shin_left">
+    <inertial>
+      <origin
+        xyz="0.00175149458975965 0.0464735662881753 0.00103519363696609"
+        rpy="0 0 0" />
+      <mass
+        value="0.20596589381705" />
+      <inertia
+        ixx="0.000459218476394825"
+        ixy="-3.14702476062067E-06"
+        ixz="1.12910649032353E-07"
+        iyy="7.7796945897455E-05"
+        iyz="2.09971232538522E-06"
+        izz="0.000471028145448972" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shin_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shin_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee_left"
+    type="fixed">
+    <origin
+      xyz="-0.000500000000063366 -0.11 0"
+      rpy="0 0 0" />
+    <parent
+      link="thigh_left" />
+    <child
+      link="shin_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="foot_left">
+    <inertial>
+      <origin
+        xyz="0.0259724293604462 0.000227025781361523 0.0121157555573008"
+        rpy="0 0 0" />
+      <mass
+        value="0.0853987779456411" />
+      <inertia
+        ixx="0.000103659471526012"
+        ixy="2.02708906805253E-07"
+        ixz="-5.02759872423661E-06"
+        iyy="9.41792602289416E-05"
+        iyz="2.02312762259924E-06"
+        izz="2.57794482332541E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/foot_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/foot_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle_left"
+    type="fixed">
+    <origin
+      xyz="0 -0.0990000000000002 0"
+      rpy="0 0 -1.57079632679487" />
+    <parent
+      link="shin_left" />
+    <child
+      link="foot_left" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hip_right">
+    <inertial>
+      <origin
+        xyz="-0.0159417912099588 -0.050740451782507 0.000107367380990729"
+        rpy="0 0 0" />
+      <mass
+        value="0.178325355978329" />
+      <inertia
+        ixx="7.48309288489201E-05"
+        ixy="-4.30389437506535E-06"
+        ixz="-2.15169248801463E-06"
+        iyy="8.36532003760765E-05"
+        iyz="-1.34572210948831E-06"
+        izz="5.32477712270027E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hip_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hip_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hiplift_right"
+    type="fixed">
+    <origin
+      xyz="0 0 -0.019800000000028"
+      rpy="0 0 0" />
+    <parent
+      link="pelvis" />
+    <child
+      link="hip_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hipconnector_right">
+    <inertial>
+      <origin
+        xyz="0.00115228000009099 0.000393632470613031 -0.0271334089653475"
+        rpy="0 0 0" />
+      <mass
+        value="0.169598376951876" />
+      <inertia
+        ixx="7.23851093783772E-05"
+        ixy="1.33130975888091E-10"
+        ixz="-2.46477126372668E-07"
+        iyy="5.76100522494493E-05"
+        iyz="-1.36480065204717E-06"
+        izz="4.31561556468542E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hipconnector_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/hipconnector_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hiprotate_right"
+    type="fixed">
+    <origin
+      xyz="0.0338000000000001 -0.0529560000000338 0.0273626927694245"
+      rpy="0 0 3.14159265358979" />
+    <parent
+      link="hip_right" />
+    <child
+      link="hipconnector_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="thigh_right">
+    <inertial>
+      <origin
+        xyz="0.00570500076541326 0.066224560876432 -1.79078806018459E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.373973704214647" />
+      <inertia
+        ixx="0.000231138331356556"
+        ixy="-1.39502413430279E-05"
+        ixz="-1.79501347479573E-09"
+        iyy="0.000118273965951736"
+        iyz="-1.69955280804368E-09"
+        izz="0.000274294467849248" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/thigh_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/thigh_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="thighlift_right"
+    type="fixed">
+    <origin
+      xyz="-0.182 -0.0191289708165422 -0.0126211927694661"
+      rpy="-3.14159265358979 0 1.5707963267949" />
+    <parent
+      link="hipconnector_right" />
+    <child
+      link="thigh_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="shin_right">
+    <inertial>
+      <origin
+        xyz="0.00175149368225934 0.0464734390157469 -0.00103517344322589"
+        rpy="0 0 0" />
+      <mass
+        value="0.205965279252637" />
+      <inertia
+        ixx="0.00045921498506546"
+        ixy="-3.14615927497245E-06"
+        ixz="-1.1317132628648E-07"
+        iyy="7.77964799040597E-05"
+        iyz="-2.10037051186984E-06"
+        izz="0.000471024559747257" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shin_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/shin_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee_right"
+    type="fixed">
+    <origin
+      xyz="-0.000499999999930008 -0.11 0"
+      rpy="0 0 0" />
+    <parent
+      link="thigh_right" />
+    <child
+      link="shin_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="foot_right">
+    <inertial>
+      <origin
+        xyz="0.0259708244889952 0.000229076981720033 -0.0121181524602838"
+        rpy="0 0 0" />
+      <mass
+        value="0.0853737511932979" />
+      <inertia
+        ixx="0.000103653185924473"
+        ixy="2.02096328260742E-07"
+        ixz="5.02476589434511E-06"
+        iyy="9.41784482253153E-05"
+        iyz="-2.02397648304924E-06"
+        izz="2.57815530348232E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/foot_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="../meshes/foot_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle_right"
+    type="fixed">
+    <origin
+      xyz="0 -0.099 0"
+      rpy="0 0 -1.57079632679487" />
+    <parent
+      link="shin_right" />
+    <child
+      link="foot_right" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
