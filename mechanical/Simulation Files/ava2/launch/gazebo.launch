@@ -10,7 +10,7 @@
     name="spawn_model"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="-file $(find FullAssembly_AVA_2_0.SLDASM)/urdf/FullAssembly_AVA_2_0.SLDASM.urdf -urdf -model FullAssembly_AVA_2_0.SLDASM"
+    args="-file $(find ava2)/urdf/ava2.urdf -urdf -model ava2"
     output="screen" />
   <node
     name="fake_joint_calibration"

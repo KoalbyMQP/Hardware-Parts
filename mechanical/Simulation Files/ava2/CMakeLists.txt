@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(FullAssembly_AVA_2_0.SLDASM)
+project(ava2)
 
 find_package(catkin REQUIRED)
 
