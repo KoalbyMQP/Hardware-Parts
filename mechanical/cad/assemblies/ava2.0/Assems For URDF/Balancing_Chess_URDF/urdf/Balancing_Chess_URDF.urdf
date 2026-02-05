@@ -26,7 +26,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/chest.STL" />
+          filename="../meshes/chest.STL" />
       </geometry>
       <material
         name="">
@@ -40,7 +40,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/chest.STL" />
+          filename="../meshes/chest.STL" />
       </geometry>
     </collision>
   </link>
@@ -66,7 +66,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/neck.STL" />
+          filename="../meshes/neck.STL" />
       </geometry>
       <material
         name="">
@@ -80,7 +80,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/neck.STL" />
+          filename="../meshes/neck.STL" />
       </geometry>
     </collision>
   </link>
@@ -124,7 +124,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/head.STL" />
+          filename="../meshes/head.STL" />
       </geometry>
       <material
         name="">
@@ -138,7 +138,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/head.STL" />
+          filename="../meshes/head.STL" />
       </geometry>
     </collision>
   </link>
@@ -182,7 +182,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/shoulder_left.STL" />
+          filename="../meshes/shoulder_left.STL" />
       </geometry>
       <material
         name="">
@@ -196,7 +196,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/shoulder_left.STL" />
+          filename="../meshes/shoulder_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -240,7 +240,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/bicep_left.STL" />
+          filename="../meshes/bicep_left.STL" />
       </geometry>
       <material
         name="">
@@ -254,7 +254,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/bicep_left.STL" />
+          filename="../meshes/bicep_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -298,7 +298,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/elbow_left.STL" />
+          filename="../meshes/elbow_left.STL" />
       </geometry>
       <material
         name="">
@@ -312,7 +312,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/elbow_left.STL" />
+          filename="../meshes/elbow_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -356,7 +356,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/forearm_left.STL" />
+          filename="../meshes/forearm_left.STL" />
       </geometry>
       <material
         name="">
@@ -370,7 +370,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/forearm_left.STL" />
+          filename="../meshes/forearm_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -414,7 +414,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hand_left.STL" />
+          filename="../meshes/hand_left.STL" />
       </geometry>
       <material
         name="">
@@ -428,7 +428,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hand_left.STL" />
+          filename="../meshes/hand_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -472,7 +472,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/gripper_left.STL" />
+          filename="../meshes/gripper_left.STL" />
       </geometry>
       <material
         name="">
@@ -486,7 +486,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/gripper_left.STL" />
+          filename="../meshes/gripper_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -530,7 +530,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/shoulder_right.STL" />
+          filename="../meshes/shoulder_right.STL" />
       </geometry>
       <material
         name="">
@@ -544,7 +544,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/shoulder_right.STL" />
+          filename="../meshes/shoulder_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -588,7 +588,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/bicep_right.STL" />
+          filename="../meshes/bicep_right.STL" />
       </geometry>
       <material
         name="">
@@ -602,7 +602,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/bicep_right.STL" />
+          filename="../meshes/bicep_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -646,7 +646,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/elbow_right.STL" />
+          filename="../meshes/elbow_right.STL" />
       </geometry>
       <material
         name="">
@@ -660,7 +660,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/elbow_right.STL" />
+          filename="../meshes/elbow_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -704,7 +704,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/forearm_right.STL" />
+          filename="../meshes/forearm_right.STL" />
       </geometry>
       <material
         name="">
@@ -718,7 +718,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/forearm_right.STL" />
+          filename="../meshes/forearm_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -762,7 +762,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hand_right.STL" />
+          filename="../meshes/hand_right.STL" />
       </geometry>
       <material
         name="">
@@ -776,7 +776,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hand_right.STL" />
+          filename="../meshes/hand_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -820,7 +820,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/gripper_right.STL" />
+          filename="../meshes/gripper_right.STL" />
       </geometry>
       <material
         name="">
@@ -834,7 +834,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/gripper_right.STL" />
+          filename="../meshes/gripper_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -873,7 +873,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/waist.STL" />
+          filename="../meshes/waist.STL" />
       </geometry>
       <material
         name="">
@@ -887,7 +887,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/waist.STL" />
+          filename="../meshes/waist.STL" />
       </geometry>
     </collision>
   </link>
@@ -931,7 +931,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/abdominalmotors.STL" />
+          filename="../meshes/abdominalmotors.STL" />
       </geometry>
       <material
         name="">
@@ -945,7 +945,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/abdominalmotors.STL" />
+          filename="../meshes/abdominalmotors.STL" />
       </geometry>
     </collision>
   </link>
@@ -989,7 +989,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/pelvis.STL" />
+          filename="../meshes/pelvis.STL" />
       </geometry>
       <material
         name="">
@@ -1003,7 +1003,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/pelvis.STL" />
+          filename="../meshes/pelvis.STL" />
       </geometry>
     </collision>
   </link>
@@ -1047,7 +1047,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiplift_left.STL" />
+          filename="../meshes/hiplift_left.STL" />
       </geometry>
       <material
         name="">
@@ -1061,7 +1061,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiplift_left.STL" />
+          filename="../meshes/hiplift_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -1105,7 +1105,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiprotate_left.STL" />
+          filename="../meshes/hiprotate_left.STL" />
       </geometry>
       <material
         name="">
@@ -1119,7 +1119,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiprotate_left.STL" />
+          filename="../meshes/hiprotate_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -1163,7 +1163,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/thigh_left.STL" />
+          filename="../meshes/thigh_left.STL" />
       </geometry>
       <material
         name="">
@@ -1177,7 +1177,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/thigh_left.STL" />
+          filename="../meshes/thigh_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -1221,7 +1221,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/calf_left.STL" />
+          filename="../meshes/calf_left.STL" />
       </geometry>
       <material
         name="">
@@ -1235,7 +1235,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/calf_left.STL" />
+          filename="../meshes/calf_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -1279,7 +1279,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/foot_left.STL" />
+          filename="../meshes/foot_left.STL" />
       </geometry>
       <material
         name="">
@@ -1293,7 +1293,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/foot_left.STL" />
+          filename="../meshes/foot_left.STL" />
       </geometry>
     </collision>
   </link>
@@ -1337,7 +1337,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiplift_right.STL" />
+          filename="../meshes/hiplift_right.STL" />
       </geometry>
       <material
         name="">
@@ -1351,7 +1351,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiplift_right.STL" />
+          filename="../meshes/hiplift_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -1395,7 +1395,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiprotate_right.STL" />
+          filename="../meshes/hiprotate_right.STL" />
       </geometry>
       <material
         name="">
@@ -1409,7 +1409,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/hiprotate_right.STL" />
+          filename="../meshes/hiprotate_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -1453,7 +1453,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/thigh_right.STL" />
+          filename="../meshes/thigh_right.STL" />
       </geometry>
       <material
         name="">
@@ -1467,7 +1467,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/thigh_right.STL" />
+          filename="../meshes/thigh_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -1511,7 +1511,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/calf_right.STL" />
+          filename="../meshes/calf_right.STL" />
       </geometry>
       <material
         name="">
@@ -1525,7 +1525,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/calf_right.STL" />
+          filename="../meshes/calf_right.STL" />
       </geometry>
     </collision>
   </link>
@@ -1569,7 +1569,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/foot_right.STL" />
+          filename="../meshes/foot_right.STL" />
       </geometry>
       <material
         name="">
@@ -1583,7 +1583,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://Balancing_Chess_URDF/meshes/foot_right.STL" />
+          filename="../meshes/foot_right.STL" />
       </geometry>
     </collision>
   </link>
